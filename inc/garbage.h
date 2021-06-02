@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   garbage.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsuardi <lsuardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/28 21:35:37 by lsuardi           #+#    #+#             */
-/*   Updated: 2021/03/29 00:40:55 by lsuardi          ###   ########.fr       */
+/*   Created: 2021/04/09 01:11:16 by lsuardi           #+#    #+#             */
+/*   Updated: 2021/04/09 01:21:58 by lsuardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#ifndef GARBAGE_H
+# define GARBAGE_H
 
-int minishell_error(void)
-{
-	perror("minishell");
-	garbage_load();
-	garbage_clear();
-	return (-1);
-}
+# include <list.h>
 
-int	parsing_error(char unexpected_token)
-{
-	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-	ft_putchar_fd(unexpected_token, 2);
-	ft_putendl_fd("'", 2);
-	return (-1);
-}
+typedef struct	s_pair {
+	void	*first;
+	void	*second;
+}	t_pair;
+
+typedef void	(*t_destructor)(void *);
+
+int		garbage_collector(void *data, t_destructor destructor, int action);
+int		garbage_add(void *data, t_destructor destructor);
+void	garbage_save(void);
+void	garbage_load(void);
+void	garbage_clear(void);
+
+#endif

@@ -1,78 +1,113 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: lsuardi <lsuardi@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/02/19 23:12:58 by lsuardi           #+#    #+#              #
-#    Updated: 2021/03/02 19:55:11 by lsuardi          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 SHELL =		/bin/sh
-.SUFFIXES =	.c .h .o
-
 NAME =		minishell
 
-SRCD =		src
-INCD =		inc
-OBJD =		.obj
+.SUFFIXES =	.c .o .h
+
+SRCDIR =	src
+INCDIR =	inc
+LIBDIR =	lib
+OBJDIR =	.obj
 
 SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
-			main\
-			error\
-			sig_handling\
-			varlist_0\
-			varlist_1\
-			varlist_2\
-			get_next_line\
-			get_next_line_utils\
-			utils_0\
-			str_utils_0\
-			str_utils_1\
-			$(addprefix builtin_,\
+			$(addprefix builtins/builtin_,\
 			cd\
 			echo\
 			env\
 			exit\
 			export\
 			pwd\
-			unset))
-INC =		$(addsuffix $(word 2, $(.SUFFIXES)),\
-			minishell\
+			unset)\
+			$(addprefix key_processing/key_process_,\
+			0\
+			1)\
+			env\
+			error\
+			history\
+			main\
+			minishell_clear\
+			minishell_parser\
+			minishell_setup\
+			sig_handling)
+INC =		$(addsuffix $(word 3, $(.SUFFIXES)),\
+			libft\
 			get_next_line\
-			varlist)
-OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 3, $(.SUFFIXES)))
+			list\
+			minishell)
+LIB	 =		ft\
+			list\
+			gnl\
+			gb
+LIBPATH =	libft_ultimate\
+			liblist_ultimate\
+			get_next_line_ultimate\
+			libgb
+OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 2, $(.SUFFIXES)))
 
 CC =		gcc
-CFLAGS =	-Wall\
-			-Werror\
-			-Wextra\
-			-I $(INCD)
+CFLAGS =	-Wall -Wextra -Werror -I $(INCDIR)
+LCFLAGS =	$(addprefix -L, $(LIBDIR)) $(addprefix -l, $(LIB))
 
-COUNT =		$(shell cat file.count 2>/dev/null)
+####    COLORS    ####
+KNRM =		\x1B[0m
+KRED =		\x1B[31m
+KGRN =		\x1B[32m
+KYEL =		\x1B[33m
+KBLU =		\x1B[34m
+KMAG =		\x1B[35m
+KCYN =		\x1B[36m
+KWHT =		\x1B[37m
+######################
 
-ifeq ($(COUNT),)
-all:
-	@echo $(words $(SRC)) > file.count && $(MAKE) -n | grep $(CC) | wc -l | tr -d ' ' > tmp.txt && rm -f file.count && echo $$(($$(cat tmp.txt) - 1)) > file.count && rm -f tmp.txt && ./make/remake.sh
-else
-all: $(NAME)
-endif
+all: libraries $(OBJDIR) $(NAME)
+	@printf "$(KGRN)\`$(NAME)\` is up to date.\n"
 
-$(NAME): $(addprefix $(OBJD)/, $(OBJ)) | $(addprefix $(INCD)/, $(INC))
-	@rm -f file.count && $(CC) $(CFLAGS) $^ -o $@ && echo '\r\033[2KCompiling [100%]'
+$(OBJDIR):
+	@printf "$(KYEL)➤ "
+	mkdir $@
+	@printf "➤ "
+	mkdir $@/builtins $@/key_processing
+	@printf "$(KNRM)"
 
-$(OBJD):
-	@mkdir $@
+$(NAME): $(addprefix $(OBJDIR)/, $(OBJ))
+	@printf "$(KCYN)[  Linking  ]\n➤ "
+	$(CC) $(CFLAGS) $^ -o $@ $(LCFLAGS)
+	@printf "$(KNRM)"
 
-$(OBJD)/%$(word 3, $(.SUFFIXES)): $(SRCD)/%$(word 1, $(.SUFFIXES)) | $(OBJD)
-	@./make/prc.sh 2>/dev/null && $(CC) $(CFLAGS) -c $< -o $@
+libraries:
+	@printf "$(KCYN)[  Building $@  ]\n➤ "
+	$(MAKE) -C $(LIBDIR)/get_next_line_ultimate
+	@printf "$(KCYN)➤ "
+	$(MAKE) -C $(LIBDIR)/libft_ultimate
+	@printf "$(KCYN)➤ "
+	$(MAKE) -C $(LIBDIR)/liblist_ultimate
+	@printf "$(KCYN)➤ "
+	$(MAKE) -C $(LIBDIR)/libgb
+	@printf "$(KYEL)➤ "
+	cp $(LIBDIR)/get_next_line_ultimate/libgnl.a $(LIBDIR)/libft_ultimate/libft.a $(LIBDIR)/liblist_ultimate/liblist.a $(LIBDIR)/libgb/libgb.a $(LIBDIR)/
+	@printf "$(KNRM)"
+
+$(OBJDIR)/%$(word 2, $(.SUFFIXES)): $(SRCDIR)/%$(word 1, $(.SUFFIXES)) $(addprefix $(INCDIR)/, $(INC))
+	@printf "$(KMAG)[  Compiling  ]\n➤ "
+	$(CC) $(CFLAGS) -c $< -o $@
+	@printf "$(KNRM)"
 
 clean:
-	@rm -rf $(OBJD)
+	@printf "$(KRED)➤ "
+	rm -rf $(OBJDIR)
+	@printf "➤ "
+	rm -f $(foreach i, $(LIB), $(LIBDIR)/lib$(i).a)
+	@printf "➤ "
+	$(MAKE) fclean -C $(LIBDIR)/get_next_line_ultimate
+	@printf "$(KRED)➤ "
+	$(MAKE) fclean -C $(LIBDIR)/libft_ultimate
+	@printf "$(KRED)➤ "
+	$(MAKE) fclean -C $(LIBDIR)/liblist_ultimate
+	@printf "$(KRED)➤ "
+	$(MAKE) fclean -C $(LIBDIR)/libgb
 
 fclean: clean
-	@rm -f $(NAME)
+	@printf "$(KRED)➤ "
+	rm -f $(NAME)
+	@printf "$(KNRM)"
 
 re: fclean all

@@ -6,62 +6,98 @@
 /*   By: lsuardi <lsuardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/02 00:19:08 by lsuardi           #+#    #+#             */
-/*   Updated: 2021/03/04 21:04:01 by lsuardi          ###   ########.fr       */
+/*   Updated: 2021/03/31 23:29:24 by lsuardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-void	minishell_clear(t_shell * ms)
+static int	setup_termios(struct termios * current, struct termios * backup)
 {
-	static t_shell * attached;
-
-	if (!attached)
-		attached = ms;
-	else
+	if ((tcgetattr(0, current) == -1)
+	|| (tcgetattr(0, backup) == -1))
+		return (-1);
+	current->c_lflag &= ~(ICANON);
+	current->c_lflag &= ~(ECHO);
+	if (tcsetattr(0, 0, current) == -1)
 	{
-		varlist_clear(&attached->var.exp);
-		varlist_clear(&attached->var.nexp);
-		destroy((void**)&attached->output);
-		attached = NULL;
+		write(2, "Error while setting terminal in non-cannonical mode\n", 52);
+		return (-1);
 	}
+	return (0);
 }
 
-void	minishell_init(t_shell * ms, const char * executable_name)
+static int	setup_termcaps(t_term * tc)
 {
-	minishell_clear(ms);
-	ms->var = NULL;
-	ms->executable_name = executable_name;
-	ms->pipe_output = NULL;
-	ms->prev_input = NULL;
-	ms->cmd_list = {
-		"cd",
-		"echo",
-		"env",
-		"exit",
-		"export",
-		"pwd",
-		"unset"
-	};
-	ms->builtin_fct_list = {
-		&builtin_cd,
-		&builtin_echo,
-		&builtin_env,
-		&builtin_exit,
-		&builtin_export,
-		&builtin_pwd,
-		&builtin_unset
-	};
+	int			ret;
+	char *		term_name;
+
+	if (!(term_name = getenv("TERM")))
+		write(2, "Specify a terminal type with 'TERM=<type>'.\n", 44);
+	else if (!(ret = tgetent(NULL, term_name)))
+		write(2, "Your terminal is not defined in termcap database (or too little information).\n", 78);
+	else if (ret == -1)
+		write(2, "Could not access the termcap database.\n", 39);
+	if (!term_name || (ret != 1))
+		return (-1);
+	tc->le = tgetstr("le", NULL);
+	tc->ri = tgetstr("nd", NULL);
+	tc->ks = "\033[0K";
+	tc->ile = tgetstr("LE", NULL);
+	return (0);
 }
 
-int		minishell_setup(t_shell * ms, const char ** envp)
+void		minishell_init(t_shell *ms, const char *executable_name)
 {
-	int		ret;
-	char *	it;
+	garbage_add(ms, minishell_clear);
+	ms->executable_name = (char *)executable_name;
+	ms->history_path = NULL;
+	ms->history = lst_new();
+	vector_init(&ms->env, CHAR);
+	vector_reserve(&ms->var, 50);
+	ms->cmd_list[0] = "cd";
+	ms->cmd_list[1] = "echo";
+	ms->cmd_list[2] = "env";
+	ms->cmd_list[3] = "exit";
+	ms->cmd_list[4] = "export";
+	ms->cmd_list[5] = "pwd";
+	ms->cmd_list[6] = "unset";
+	ms->builtin_fct_list[0] = &builtin_cd;
+	ms->builtin_fct_list[1] = &builtin_echo;
+	ms->builtin_fct_list[2] = &builtin_env;
+	ms->builtin_fct_list[3] = &builtin_exit;
+	ms->builtin_fct_list[4] = &builtin_export;
+	ms->builtin_fct_list[5] = &builtin_pwd;
+	ms->builtin_fct_list[6] = &builtin_unset;
+}
 
-	it = envp - 1;
-	while (*(++it)))
-		if (varlist_push_raw(&ms->var, *it, 1))
+int				minishell_setup(t_shell *ms, const char **envp)
+{
+	int	i;
+	int	count;
+
+	i = 0;
+	count = 0;
+	while (envp[count])
+		count++;
+	env = (char **)malloc(sizeof(char *) * (count + 1));
+	if (!env)
+		return (-1);
+	env[count] = NULL;
+	while (*envp)
+	{
+		env[i++] = ft_strdup(envp);
+		if (!env[i])
+		{
+			while (i)
+				free(env[--i]);
+			free(env);
 			return (-1);
-	return (varlist_push(&ms->var, "?", "0", 0));
+		}
+		envp++;
+	}
+	if (get_history(ms) || setup_termcaps(&ms->tcaps)
+	|| setup_termios(&ms->term_minishell, &ms->term_backup))
+		return (-1);
+	return (0);
 }

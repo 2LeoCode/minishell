@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
+/*   minishell_clear.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsuardi <lsuardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/02 01:53:31 by lsuardi           #+#    #+#             */
-/*   Updated: 2021/03/08 18:44:42 by lsuardi          ###   ########.fr       */
+/*   Created: 2021/03/28 21:15:49 by lsuardi           #+#    #+#             */
+/*   Updated: 2021/04/01 16:15:43 by lsuardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-char **		ft_split(const char * s, const char * charset)
+void	minishell_clear(void *data)
 {
-	
+	t_shell	*ms = (t_shell *)data;
+	vector_clear(&ms->var);
+	lst_destroy(&ms->history);
+	return (NULL);
 }
