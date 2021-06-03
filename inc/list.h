@@ -19,7 +19,7 @@
 # ifndef SWAP_BUFFER_SIZE
 #  define SWAP_BUFFER_SIZE 32
 # endif
-
+bonjoyur
 typedef int				(*t_cmpf)(void *, void *, size_t);
 
 typedef struct s_list
@@ -47,6 +47,6 @@ void	lst_merge(t_list *sentinel_a, t_list *sentinel_b);
 void	lst_sort(t_list *sentinel, t_cmpf cmp_fun);
 
 void	lst_clear(t_list *sentinel);
-void	lst_destroy(void *sentinel);
+void	lst_destroy(t_list *sentinel);
 
 #endif
