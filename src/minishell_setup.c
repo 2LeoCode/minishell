@@ -87,6 +87,7 @@ int				minishell_setup(t_shell *ms, char **envp)
 		return (-1);
 	env->count = count;
 	ft_addenv("HISTFILE", ".ms_history");
+	printf("Hello\n");
 	while (++i < count)
 		env->data[i] = envp[i];
 	if (get_history(ms) || setup_termcaps(&ms->tcaps)
