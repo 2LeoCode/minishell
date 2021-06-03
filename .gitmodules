@@ -1,0 +1,12 @@
+[submodule "liblist_ultimate"]
+	path = liblist_ultimate
+	url = https://github.com/2LeoCode/liblist_ultimate.git
+[submodule "lib/libft_ultimate"]
+	path = lib/libft_ultimate
+	url = https://github.com/2LeoCode/libft_ultimate.git
+[submodule "lib/libgb"]
+	path = lib/libgb
+	url = https://github.com/2LeoCode/libgb.git
+[submodule "lib/get_next_line_ultimate"]
+	path = lib/get_next_line_ultimate
+	url = https://github.com/2LeoCode/get_next_line_ultimate.git
