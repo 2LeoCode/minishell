@@ -33,6 +33,6 @@ size_t	_ft_strlen(const char *s);
 char	*_ft_strdup(const char *s);
 int		_ft_str_replace_first(char *s, int before, int after);
 char	*_ft_strjoin(const char *prefix, const char *suffix);
-
 int		get_next_line(int fd, char **line);
+
 #endif

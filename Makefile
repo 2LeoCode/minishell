@@ -20,10 +20,10 @@ SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
 			$(addprefix key_processing/key_process_,\
 			0\
 			1)\
-			env\
 			error\
 			history\
 			main\
+			minishell_env\
 			minishell_clear\
 			minishell_parser\
 			minishell_setup\
@@ -32,15 +32,13 @@ INC =		$(addsuffix $(word 3, $(.SUFFIXES)),\
 			libft\
 			get_next_line\
 			list\
+			garbage\
 			minishell)
 LIB	 =		ft\
-			list\
-			gnl\
-			gb
-LIBPATH =	libft_ultimate\
-			liblist_ultimate\
-			get_next_line_ultimate\
-			libgb
+            list\
+            gnl\
+            gb\
+            ncurses
 OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 2, $(.SUFFIXES)))
 
 CC =		gcc

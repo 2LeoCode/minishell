@@ -15,8 +15,9 @@
 int minishell_error(void)
 {
 	perror("minishell");
-	garbage_load();
-	garbage_clear();
+	ft_clearenv();
+	gb_load();
+	gb_clear();
 	return (-1);
 }
 

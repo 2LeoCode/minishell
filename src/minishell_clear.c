@@ -14,8 +14,8 @@
 
 void	minishell_clear(void *data)
 {
-	t_shell	*ms = (t_shell *)data;
-	vector_clear(&ms->var);
-	lst_destroy(&ms->history);
-	return (NULL);
+	t_shell	*ms;
+
+	ms = (t_shell *)data;
+	lst_destroy(ms->history);
 }

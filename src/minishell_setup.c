@@ -32,7 +32,7 @@ static int	setup_termcaps(t_term * tc)
 	int			ret;
 	char *		term_name;
 
-	if (!(term_name = getenv("TERM")))
+	if (!(term_name = ft_getenv("TERM")))
 		write(2, "Specify a terminal type with 'TERM=<type>'.\n", 44);
 	else if (!(ret = tgetent(NULL, term_name)))
 		write(2, "Your terminal is not defined in termcap database (or too little information).\n", 78);
@@ -49,12 +49,11 @@ static int	setup_termcaps(t_term * tc)
 
 void		minishell_init(t_shell *ms, const char *executable_name)
 {
-	garbage_add(ms, minishell_clear);
+	gb_add(ms, minishell_clear);
 	ms->executable_name = (char *)executable_name;
 	ms->history_path = NULL;
-	ms->history = lst_new();
-	vector_init(&ms->env, CHAR);
-	vector_reserve(&ms->var, 50);
+	ms->history = NULL;
+	env = NULL;
 	ms->cmd_list[0] = "cd";
 	ms->cmd_list[1] = "echo";
 	ms->cmd_list[2] = "env";
@@ -71,33 +70,27 @@ void		minishell_init(t_shell *ms, const char *executable_name)
 	ms->builtin_fct_list[6] = &builtin_unset;
 }
 
-int				minishell_setup(t_shell *ms, const char **envp)
+int				minishell_setup(t_shell *ms, char **envp)
 {
 	int	i;
 	int	count;
 
-	i = 0;
+	i = -1;
 	count = 0;
+	ms->history = lst_new();
+	if (!ms->history)
+		return (-1);
 	while (envp[count])
 		count++;
-	env = (char **)malloc(sizeof(char *) * (count + 1));
+	env = malloc(sizeof(struct s_env) + count);
 	if (!env)
 		return (-1);
-	env[count] = NULL;
-	while (*envp)
-	{
-		env[i++] = ft_strdup(envp);
-		if (!env[i])
-		{
-			while (i)
-				free(env[--i]);
-			free(env);
-			return (-1);
-		}
-		envp++;
-	}
+	env->count = count;
+	ft_addenv("HISTFILE", ".ms_history");
+	while (++i < count)
+		env->data[i] = envp[i];
 	if (get_history(ms) || setup_termcaps(&ms->tcaps)
-	|| setup_termios(&ms->term_minishell, &ms->term_backup))
+	|| setup_termios(&ms->term_shell, &ms->term_backup))
 		return (-1);
 	return (0);
 }

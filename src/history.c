@@ -12,34 +12,18 @@
 
 #include <minishell.h>
 
-int		add_to_history(t_list *history, const char *content)
+int		get_history(t_shell *ms)
 {
-	const char	*tmp;
-
-	tmp = ft_strdup(content);
-	if (!tmp)
-		return (-1);
-	if (lst_push_front(history, tmp));
-	{
-		free(tmp);
-		tmp = NULL;
-		return (-1);
-	}
-	return (0);
-}
-
-int		get_history(t_shell * ms)
-{
-	char *	line;
+	char	*line;
 	int		fd;
 	int		ret;
 	int		i;
 
-	ms->history_path = get_env(&ms->env, "HISTFILE");
+	ms->history_path = ft_getenv("HISTFILE");
 	if ((fd = open(ms->history_path, O_RDONLY)) == -1)
 		return (-1 * (errno != ENOENT));
 	ret = 1;
-	while (ret)
+	while (ret > 0)
 	{
 		ret = get_next_line(fd, &line);
 		if (ret == -1)
@@ -47,12 +31,14 @@ int		get_history(t_shell * ms)
 		i = 0;
 		while (line[i] && (line[i++] != ';'))
 			continue ;
-		if (i && (line[i - 1] == ';') && add_to_history(&ms->history, &line[i]))
-			return ((int)destroy((void**)&line) - 1);
+		if (i && (line[i - 1] == ';')
+					&& lst_push_front(ms->history, &line[i],
+					ft_strlen(&line[i])))
+			ret = -1;
 		free(line);
 	}
 	line = NULL;
-	return (0);
+	return (ret);
 }
 
 int		save_history(t_shell *ms)
@@ -67,7 +53,7 @@ int		save_history(t_shell *ms)
 	while (lst != ms->history)
 	{
 		write(fd, ": :0;", 5);
-		ft_fputs(fd, (char*)lst->data);
+		ft_putendl_fd((char*)lst->data, fd);
 		lst = lst->prev;
 	}
 	return (0);

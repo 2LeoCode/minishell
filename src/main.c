@@ -56,30 +56,31 @@ static int		get_input(t_shell * ms, char ** final_input)
 	while (!(ret = process_key(ms, &input, ft_getchar())))
 		continue ;
 	if (ret == -1)
-		return ((int)destroy((void*)&(input.in)) - 1);
-	write(1, "\n", 1);
-	*final_input = input.in;
-	return (1);
+		free(input.in);
+	else
+	{
+		write(1, "\n", 1);
+		*final_input = input.in;
+	}
+	return (ret);
 }
 
 static int		execute_cmd(t_shell *ms, char *input)
 {
 	/*t_list		*cmds;*/
-	t_list		*it;
-	int			builtin_index;
-	pid_t		cpid;
+	//int			builtin_index;
+	//pid_t		cpid;
 
 	if (/*lst_init(&cmds)
 	|| */*input && ((!ms->history || ft_strcmp(input, (char*)ms->history->data))
-	&& lst_push_front(&ms->history, (void*)input, sizeof(char *)))
+	&& lst_push_front(ms->history, input, ft_strlen(input)))
 	/*|| parse_cmds(&cmds, input)*/)
 		return (-1);
 	/*it = cmds->next;
 	while (++it != cmds)
 	{
 	}*/
-	printf("Hello World");
-	save_history(ms);
+	printf("Hello World\n");
 	return (0);
 }
 
@@ -102,7 +103,7 @@ int 			main(int argc, char **argv, char **envp)
 	(void)argc;
 	minishell_init(&ms, argv[0]);
 	if ((setup_signal() == SIG_ERR)
-	|| minishell_setup(&ms, (const char**)envp))
+	|| minishell_setup(&ms, envp))
 		return (minishell_error());
 	read_ret = 1;
 	while (1)
@@ -112,5 +113,6 @@ int 			main(int argc, char **argv, char **envp)
 		|| (read_ret && ((execute_cmd(&ms, input) == -1))))
 			return (minishell_error());
 	}
+	save_history(&ms);
 	return (0);
 }

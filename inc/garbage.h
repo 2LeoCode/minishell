@@ -23,9 +23,9 @@ typedef struct	s_pair {
 typedef void	(*t_destructor)(void *);
 
 int		garbage_collector(void *data, t_destructor destructor, int action);
-int		garbage_add(void *data, t_destructor destructor);
-void	garbage_save(void);
-void	garbage_load(void);
-void	garbage_clear(void);
+int		gb_add(void *data, t_destructor destructor);
+int		gb_save(void);
+int		gb_load(void);
+void	gb_clear(void);
 
 #endif

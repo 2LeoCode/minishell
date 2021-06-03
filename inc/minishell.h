@@ -59,28 +59,9 @@ struct	s_env
 {
 	int		count;
 	char	*data[];
-} env;
+}	*env;
 
 typedef int		(*t_builtin_fun)(int, char **, char **);
-
-typedef enum	e_token_type
-{
-	token_end,
-	token_text,
-	token_semicolon,
-	token_pipe,
-	token_arrow_left,
-	token_arrow_right,
-	token_double_arrow_right,
-	token_single_quote,
-	token_double_quote
-}	t_token_type;
-
-typedef struct	s_token
-{
-	char			*token_ptr;
-	t_token_type	token_type;
-}	t_token;
 
 typedef struct	s_input
 {
@@ -150,9 +131,9 @@ void	abort_handler(int);
 /*
 ** minishell_setup.c
 */
-void	*minishell_clear(t_shell *);
+void	minishell_clear(void *data);
 void	minishell_init(t_shell *, const char *);
-int		minishell_setup(t_shell *, const char **);
+int		minishell_setup(t_shell *, char **);
 
 /*
 ** history.c
@@ -175,5 +156,14 @@ int		process_key_hist(const t_list *, t_input *, int);
 int		reset_input(t_input *, const t_list *);
 int		key_hist_block(void);
 int		update_input(const t_term *, t_input *);
+
+/*
+** minishell_env.c
+*/
+int			ft_addenv(const char *name, const char *value);
+int 		ft_delenv(const char *name);
+char		*ft_getenv(const char *name);
+int			ft_setenv(const char *name, const char *value);
+void		ft_clearenv(void);
 
 #endif
