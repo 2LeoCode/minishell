@@ -7,3 +7,6 @@
 [submodule "lib/get_next_line_ultimate"]
 	path = lib/get_next_line_ultimate
 	url = https://github.com/2LeoCode/get_next_line_ultimate.git
+[submodule "lib/liblist_ultimate"]
+	path = lib/liblist_ultimate
+	url = https://github.com/2LeoCode/liblist_ultimate.git
