@@ -57,7 +57,7 @@ KWHT =		\x1B[37m
 ######################
 
 all: libraries $(OBJDIR) $(NAME)
-	@printf "$(KGRN)\`$(NAME)\` is up to date.\n"
+	@printf "$(KGRN)\`$(NAME)\` is up to date.\n$(KNRM)"
 
 $(OBJDIR):
 	@printf "$(KYEL)➤ "

@@ -101,6 +101,9 @@ int 			main(int argc, char **argv, char **envp)
 	t_shell		ms;
 
 	(void)argc;
+	if (gb_add(&ms, minishell_clear))
+		return (-1);
+	printf("Ok\n");
 	minishell_init(&ms, argv[0]);
 	if ((setup_signal() == SIG_ERR)
 	|| minishell_setup(&ms, envp))

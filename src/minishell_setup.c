@@ -49,7 +49,6 @@ static int	setup_termcaps(t_term * tc)
 
 void		minishell_init(t_shell *ms, const char *executable_name)
 {
-	gb_add(ms, minishell_clear);
 	ms->executable_name = (char *)executable_name;
 	ms->history_path = NULL;
 	ms->history = NULL;
@@ -87,7 +86,6 @@ int				minishell_setup(t_shell *ms, char **envp)
 		return (-1);
 	env->count = count;
 	ft_addenv("HISTFILE", ".ms_history");
-	printf("Hello\n");
 	while (++i < count)
 		env->data[i] = envp[i];
 	if (get_history(ms) || setup_termcaps(&ms->tcaps)

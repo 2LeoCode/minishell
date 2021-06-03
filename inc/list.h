@@ -19,7 +19,7 @@
 # ifndef SWAP_BUFFER_SIZE
 #  define SWAP_BUFFER_SIZE 32
 # endif
-bonjoyur
+
 typedef int				(*t_cmpf)(void *, void *, size_t);
 
 typedef struct s_list
