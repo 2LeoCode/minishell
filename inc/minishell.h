@@ -165,5 +165,5 @@ int 		ft_delenv(const char *name);
 char		*ft_getenv(const char *name);
 int			ft_setenv(const char *name, const char *value);
 void		ft_clearenv(void);
-
+void		ft_printenv(void);
 #endif

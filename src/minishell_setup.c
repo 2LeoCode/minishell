@@ -81,13 +81,23 @@ int				minishell_setup(t_shell *ms, char **envp)
 		return (-1);
 	while (envp[count])
 		count++;
-	env = malloc(sizeof(struct s_env) + count);
+	env = malloc(sizeof(struct s_env) + count * sizeof(char *));
 	if (!env)
 		return (-1);
 	env->count = count;
+	while (++i < env->count)
+	{
+		env->data[i] = ft_strdup(envp[i]);
+		if (!env->data[i])
+		{
+			while (i--)
+				free(env->data[i]);
+			free(env);
+			return (-1);
+		}
+	}
 	ft_addenv("HISTFILE", ".ms_history");
-	while (++i < count)
-		env->data[i] = envp[i];
+	i = -1;
 	if (get_history(ms) || setup_termcaps(&ms->tcaps)
 	|| setup_termios(&ms->term_shell, &ms->term_backup))
 		return (-1);

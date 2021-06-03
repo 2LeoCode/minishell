@@ -42,7 +42,7 @@ LIB	 =		ft\
 OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 2, $(.SUFFIXES)))
 
 CC =		gcc
-CFLAGS =	-Wall -Wextra -Werror -I $(INCDIR)
+CFLAGS =	-I $(INCDIR)
 LCFLAGS =	$(addprefix -L, $(LIBDIR)) $(addprefix -l, $(LIB))
 
 ####    COLORS    ####

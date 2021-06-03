@@ -1,5 +1,11 @@
 #include <minishell.h>
 
+void	ft_printenv(void)
+{
+	for (int i = 0; i < env->count; i++)
+		printf("%d: %s\n", i, env->data[i]);
+}
+
 int		ft_addenv(const char *name, const char *value)
 {
 	struct s_env	*new_env;
@@ -12,8 +18,8 @@ int		ft_addenv(const char *name, const char *value)
 	i = -1;
 	while (++i < env->count)
 		new_env->data[i] = env->data[i];
-	new_env->data[env->count] = ft_strcjoin(name, value, '=');
-	if (!new_env->data[env->count])
+	new_env->data[i] = ft_strcjoin(name, value, '=');
+	if (!new_env->data[i])
 	{
 		free(new_env);
 		new_env = NULL;
