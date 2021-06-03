@@ -12,6 +12,9 @@
 
 #include <minishell.h>
 
+/*
+**	Destructor for the t_shell struct, that we will pass to `gb_add`
+*/
 void	minishell_clear(void *data)
 {
 	t_shell	*ms;

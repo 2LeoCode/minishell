@@ -12,6 +12,11 @@
 
 #include <minishell.h>
 
+/*
+**	This function will read the history file that we set earlier in the
+**	HISTFILE environment variable using successive `get_next_line` calls to
+**	store the command history inside our chained list.
+*/
 int		get_history(t_shell *ms)
 {
 	char	*line;
@@ -41,6 +46,10 @@ int		get_history(t_shell *ms)
 	return (ret);
 }
 
+/*
+**	This will simply do the opposite: read the command history from our list,
+**	and write it back into our history file.
+*/
 int		save_history(t_shell *ms)
 {
 	int			fd;

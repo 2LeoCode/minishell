@@ -42,27 +42,41 @@
 #  define CDIR_BUFFER_SIZE 32
 # endif
 
+# define _KEY_UP 16758
+# define _KEY_DOWN 17014
+# define _KEY_LEFT 17526
+# define _KEY_RIGHT 17270
+# define _KEY_ESC 27
+# define _KEY_ENTER 10
+# define _KEY_DELETE 127
 
-
-# define NENV 0
-# define ENV 1
-
-#define _KEY_UP 16758
-#define _KEY_DOWN 17014
-#define _KEY_LEFT 17526
-#define _KEY_RIGHT 17270
-#define _KEY_ESC 27
-#define _KEY_ENTER 10
-#define _KEY_DELETE 127
-
+/*
+**	Global struct containing the environment variables
+*/
 struct	s_env
 {
 	int		count;
 	char	*data[];
 }	*env;
 
+/*
+**	All builtin function are prototyped
+**	`int fun(int argc, char **argv, char **envp);`
+*/
 typedef int		(*t_builtin_fun)(int, char **, char **);
 
+/*
+**	Structure used before sending the input to the program to manage command
+**	history and cursor motion, containing:
+**		char	*in: the actual input
+**		int		index: the new cursor index
+**		int		prev_index: the old cursor index (before pressing the last key)
+**		t_list	*hist, *prev_hist: two list members pointing to the same list,
+**		which is the command history, hist points to the last command and
+**		prev_hist points to the previous command
+**		int		prev_len: the previous length of the string (before pressing the
+**		last key)
+*/
 typedef struct	s_input
 {
 	char		*in;
@@ -73,6 +87,10 @@ typedef struct	s_input
 	int			prev_len;
 }	t_input;
 
+
+/*
+**	WORK IN PROGRESS (Parsing)
+*/
 typedef struct	s_cmd
 {
 	bool		pipe;
@@ -85,6 +103,9 @@ typedef struct	s_cmd
 	char		*argv[];
 }	t_cmd;
 
+/*
+**	Struct containing all the termcaps necessary for the project.
+*/
 typedef struct	s_term
 {
 	char		*le;
@@ -93,6 +114,9 @@ typedef struct	s_term
 	char		*ks;
 }	t_term;
 
+/*
+**	Big main structure containing all the data we need for the project.
+*/
 typedef struct			s_shell
 {
 	struct termios		term_shell;
@@ -107,7 +131,7 @@ typedef struct			s_shell
 }	t_shell;
 
 /*
-** built-ins
+**	built-ins
 */
 int		builtin_cd(int, char **, char **);
 int		builtin_echo(int, char **, char **);
@@ -118,31 +142,31 @@ int		builtin_pwd(int, char **, char **);
 int		builtin_unset(int, char **, char **);
 
 /*
-** error.c
+**	error.c
 */
 int		minishell_error(void);
 
 /*
-** sig_handling.c
+**	sig_handling.c
 */
 void	int_handler(int);
 void	abort_handler(int);
 
 /*
-** minishell_setup.c
+**	minishell_setup.c
 */
 void	minishell_clear(void *data);
 void	minishell_init(t_shell *, const char *);
 int		minishell_setup(t_shell *, char **);
 
 /*
-** history.c
+**	history.c
 */
 int		get_history(t_shell *);
 int		save_history(t_shell *);
 
 /*
-** key_process_0.c
+**	key_process_0.c
 */
 int		process_key_print(t_input *, int);
 int		process_key_del(t_input *);
@@ -151,14 +175,14 @@ int		process_key_right(const t_term *, t_input *);
 int		process_key_hist(const t_list *, t_input *, int);
 
 /*
-** key_process_1.c
+**	key_process_1.c
 */
 int		reset_input(t_input *, const t_list *);
 int		key_hist_block(void);
 int		update_input(const t_term *, t_input *);
 
 /*
-** minishell_env.c
+**	minishell_env.c
 */
 int			ft_addenv(const char *name, const char *value);
 int 		ft_delenv(const char *name);

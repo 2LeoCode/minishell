@@ -12,16 +12,26 @@
 
 #include <minishell.h>
 
+/*
+**	When a SIGINT is received (for example through CTRL+C), it will not exit the
+**	program, it will instead insert a new line and write the shell prompt.
+*/
 void int_handler(int sig)
 {
 	(void)sig;
-	write(1, "\r\033[2Kminishell-1.0$ \nminishell-1.0$ ", 36);
+	write(1, "\nminishell-1.0$ ", 36);
 	errno = 130;
 }
 
+/*
+**	A default abort-handler that will free the memory stored in our garbage
+**	(see garbage.h) before exiting. That may be useful if we want to send a
+**	SIGABRT if something goes wrong.
+*/
 void abort_handler(int sig)
 {
 	(void)sig;
-	minishell_clear(NULL);
+	gb_load();
+	gb_clear();
 	exit(errno);
 }

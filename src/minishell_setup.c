@@ -12,7 +12,22 @@
 
 #include <minishell.h>
 
-static int	setup_termios(struct termios * current, struct termios * backup)
+/*
+**	In this function we will get the current terminal attributes into two
+**	`struct termios`, one that we edit through bit mask to remove the ICANON
+**	(canonical-mode) and ECHO (echo-mode) and apply to our current terminal
+**	through `tcsetattr`, and one that we will keep as a backup to reset the
+**	terminal to how it was before at the end of the program.
+**	The non-canonical mode will make the `read` function non-blocking, so every
+**	key will be returned immediately without waiting for a new line like by
+**	default.
+**	And the echo mode just means that when you press a key it will echo it on
+**	the terminal, so disabling it will just send the key to the program without
+**	echoing it, so we will have to print it manually with `write`, this will
+**	allow us to move our cursor and insert/delete characters in the middle of
+**	our input.
+*/
+static int	setup_termios(struct termios *current, struct termios *backup)
 {
 	if ((tcgetattr(0, current) == -1)
 	|| (tcgetattr(0, backup) == -1))
@@ -21,12 +36,16 @@ static int	setup_termios(struct termios * current, struct termios * backup)
 	current->c_lflag &= ~(ECHO);
 	if (tcsetattr(0, 0, current) == -1)
 	{
-		write(2, "Error while setting terminal in non-cannonical mode\n", 52);
+		write(2, "Error while editing terminal attributes\n", 40);
 		return (-1);
 	}
 	return (0);
 }
 
+/*
+**	Here we simply initialize the termcap library and pick up the termcaps that
+**	we will need in the program into our `t_term` struct.
+*/
 static int	setup_termcaps(t_term * tc)
 {
 	int			ret;
@@ -47,6 +66,10 @@ static int	setup_termcaps(t_term * tc)
 	return (0);
 }
 
+/*
+**	Here we will initialize all constant variables and set our pointers to NULL
+**	before doing anything that could fail.
+*/
 void		minishell_init(t_shell *ms, const char *executable_name)
 {
 	ms->executable_name = (char *)executable_name;
@@ -69,7 +92,13 @@ void		minishell_init(t_shell *ms, const char *executable_name)
 	ms->builtin_fct_list[6] = &builtin_unset;
 }
 
-int				minishell_setup(t_shell *ms, char **envp)
+/*
+**	Here we initialize all our data that needs allocation or that can fail to
+**	initialize, so global environment variables, the list containing the
+**	command history, the termcap library and the termios structures that will
+**	allow us to change the terminal attributes (see `setup_termios` above)
+*/
+int			minishell_setup(t_shell *ms, char **envp)
 {
 	int	i;
 	int	count;

@@ -12,6 +12,11 @@
 
 #include <minishell.h>
 
+/*
+**	exit is not as tiny as we could think as there is a weird behavior in bash's
+**	exit that trows an error when called with a value that is superior to
+**	LONG_LONG_MAX (still needs some adjustments for lisibility)
+*/
 int builtin_exit(int ac, char ** av, char ** ep)
 {
 	long long	ret;
