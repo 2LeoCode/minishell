@@ -7,8 +7,7 @@ void	foo(void)
 
 int	main(int argc, char **argv)
 <%
-	void	(*fooptr)(void) = foo;
-
-	printf("%s\n", #foo);
+	char tab<::> = "Hello World\n";
+	printf("%s", tab);
 	return (0);
 %>

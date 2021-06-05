@@ -38,7 +38,7 @@ int		get_history(t_shell *ms)
 			continue ;
 		if (i && (line[i - 1] == ';')
 					&& lst_push_front(ms->history, &line[i],
-					ft_strlen(&line[i])))
+					ft_strlen(&line[i]) + 1))
 			ret = -1;
 		free(line);
 	}

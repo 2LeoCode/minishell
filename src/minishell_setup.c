@@ -27,6 +27,11 @@
 **	allow us to move our cursor and insert/delete characters in the middle of
 **	our input.
 */
+struct s_globaldata	g_global_data = {
+	false,
+	0
+};
+
 static int	setup_termios(struct termios *current, struct termios *backup)
 {
 	if ((tcgetattr(0, current) == -1)
@@ -49,7 +54,7 @@ static int	setup_termios(struct termios *current, struct termios *backup)
 static int	setup_termcaps(t_term * tc)
 {
 	int			ret;
-	char *		term_name;
+	char		*term_name;
 
 	if (!(term_name = ft_getenv("TERM")))
 		write(2, "Specify a terminal type with 'TERM=<type>'.\n", 44);
@@ -75,7 +80,6 @@ void		minishell_init(t_shell *ms, const char *executable_name)
 	ms->executable_name = (char *)executable_name;
 	ms->history_path = NULL;
 	ms->history = NULL;
-	env = NULL;
 	ms->cmd_list[0] = "cd";
 	ms->cmd_list[1] = "echo";
 	ms->cmd_list[2] = "env";
@@ -110,18 +114,18 @@ int			minishell_setup(t_shell *ms, char **envp)
 		return (-1);
 	while (envp[count])
 		count++;
-	env = malloc(sizeof(struct s_env) + count * sizeof(char *));
-	if (!env)
+	g_global_data.env = malloc(sizeof(struct s_env) + count * sizeof(char *));
+	if (!g_global_data.env)
 		return (-1);
-	env->count = count;
-	while (++i < env->count)
+	g_global_data.env->count = count;
+	while (++i < g_global_data.env->count)
 	{
-		env->data[i] = ft_strdup(envp[i]);
-		if (!env->data[i])
+		g_global_data.env->data[i] = ft_strdup(envp[i]);
+		if (!g_global_data.env->data[i])
 		{
 			while (i--)
-				free(env->data[i]);
-			free(env);
+				free(g_global_data.env->data[i]);
+			free(g_global_data.env);
 			return (-1);
 		}
 	}

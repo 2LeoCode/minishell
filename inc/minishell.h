@@ -42,22 +42,28 @@
 #  define CDIR_BUFFER_SIZE 32
 # endif
 
-# define _KEY_UP 16758
-# define _KEY_DOWN 17014
-# define _KEY_LEFT 17526
-# define _KEY_RIGHT 17270
+# define _KEY_UP 4283163
+# define _KEY_DOWN 4348699
+# define _KEY_LEFT 4479771
+# define _KEY_RIGHT 4414235
 # define _KEY_ESC 27
 # define _KEY_ENTER 10
 # define _KEY_DELETE 127
 
 /*
-**	Global struct containing the environment variables
+**	Global struct containing the environment variables and a boolean used for
+**	CTRL-C
 */
-struct	s_env
+
+extern struct	s_globaldata
 {
-	int		count;
-	char	*data[];
-}	*env;
+	bool	sigint;
+	struct	s_env
+	{
+		int		count;
+		char	*data[];
+	}	*env;
+}	g_global_data;
 
 /*
 **	All builtin function are prototyped
@@ -71,9 +77,7 @@ typedef int		(*t_builtin_fun)(int, char **, char **);
 **		char	*in: the actual input
 **		int		index: the new cursor index
 **		int		prev_index: the old cursor index (before pressing the last key)
-**		t_list	*hist, *prev_hist: two list members pointing to the same list,
-**		which is the command history, hist points to the last command and
-**		prev_hist points to the previous command
+**		t_list	*hist: is a pointer to the last command in the command history
 **		int		prev_len: the previous length of the string (before pressing the
 **		last key)
 */
@@ -83,7 +87,6 @@ typedef struct	s_input
 	int			index;
 	int			prev_index;
 	t_list		*hist;
-	t_list		*prev_hist;
 	int			prev_len;
 }	t_input;
 

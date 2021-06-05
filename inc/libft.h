@@ -89,10 +89,8 @@ char				*ft_strchr(const char *s, int c);
 int					ft_strcmp(const char *s1, const char *s2);
 char				*ft_strcpy(char *dst, const char *src);
 char				*ft_strdup(const char *s1);
-int					ft_strerase(char **s, unsigned int i,
-						void (*free_fun)(void *));
-int					ft_strinsert(char **s, unsigned int i, int c,
-						void (*free_fun)(void *));
+int					ft_strerase(char **s, unsigned int i);
+int					ft_strinsert(char **s, unsigned int i, int c);
 int					ft_strisalnum(const char *s);
 int					ft_strisalpha(const char *s);
 int					ft_strisascii(const char *s);

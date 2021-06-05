@@ -23,7 +23,8 @@ int	reset_input(t_input *input, const t_list *history)
 	free(input->in);
 	if (!(input->in = ft_strdup("")))
 		return (-1);
-	input->hist = (t_list*)history;
+	if (history)
+		input->hist = (t_list*)history;
 	input->prev_index = input->index;
 	input->index = 0;
 	return (0);

@@ -75,29 +75,31 @@ int	process_key_right(const t_term *tcaps, t_input *input)
 **	is that when we are at the last element, we first set the input to an empty
 **	string, and if DOWN is pressed again, then we will block and play the beep.
 */
-int	process_key_hist(const t_list *history, t_input *input, int key)
+int	process_key_hist(const t_list *history_sentinel, t_input *input, int key)
 {
-	if (((key == _KEY_UP) && input->hist)
-	|| ((key == _KEY_DOWN) && input->prev_hist))
+	if ((key == _KEY_DOWN) && input->hist->prev == history_sentinel)
 	{
-		if (key == _KEY_UP)
-			input->prev_hist = input->hist->prev;
-		else
-		{
-			input->hist = input->prev_hist;
-			input->prev_hist = input->prev_hist->prev;
-		}
+		if (reset_input(input, history_sentinel))
+			return (-1);
+	}
+	else if (((key == _KEY_UP) && input->hist->next != history_sentinel)
+				|| ((key == _KEY_DOWN) && input->hist != history_sentinel))
+	{
 		free(input->in);
-		if (!(input->in = ft_strdup((char*)input->hist->data)))
+		if (key == _KEY_UP)
+		{
+			input->hist = input->hist->next;
+			input->in = ft_strdup(input->hist->data);
+		}
+		else if (key == _KEY_DOWN)
+		{
+			input->hist = input->hist->prev;
+			input->in = ft_strdup(input->hist->data);
+		}
+		if (!input->in)
 			return (-1);
 		input->prev_index = input->index;
 		input->index = ft_strlen(input->in);
-		input->hist = input->hist->next;
-	}
-	else if ((key == _KEY_DOWN) && *(input->in))
-	{
-		if (reset_input(input, history))
-			return (-1);
 	}
 	else
 		return (key_hist_block());

@@ -26,6 +26,11 @@ static int		process_key(t_shell *ms, t_input *input, int key)
 {
 	int ret;
 
+	if (g_global_data.sigint)
+	{
+		g_global_data.sigint = false;
+		reset_input(input, NULL);
+	}
 	if (key == -1)
 		return (-1);
 	if (key == _KEY_ENTER)
@@ -77,7 +82,6 @@ static int		get_input(t_shell *ms, char **final_input)
 	input.index = 0;
 	input.prev_index = 0;
 	input.hist = ms->history;
-	input.prev_hist = NULL;
 	input.prev_len = 0;
 	while (!(ret = process_key(ms, &input, ft_getchar())))
 		continue ;
@@ -98,20 +102,10 @@ static int		get_input(t_shell *ms, char **final_input)
 */
 static int		execute_cmd(t_shell *ms, char *input)
 {
-	//t_list		*cmds;
-	//int			builtin_index;
-	//pid_t		cpid;
-
-	if (/*lst_init(&cmds)
-	|| */*input && ((!ms->history || ft_strcmp(input, (char*)ms->history->data))
-	&& lst_push_front(ms->history, input, ft_strlen(input)))
-	/*|| parse_cmds(&cmds, input)*/)
+	if (*input && ((!lst_size(ms->history)
+				|| ft_strcmp(input, (char*)ms->history->next->data))
+				&& lst_push_front(ms->history, input, ft_strlen(input) + 1)))
 		return (-1);
-	/*it = cmds->next;
-	while (++it != cmds)
-	{
-	}*/
-	printf("Hello World\n");
 	return (0);
 }
 
@@ -130,7 +124,7 @@ static sig_t	setup_signal(void)
 
 int 			main(int argc, char **argv, char **envp)
 {
-	//char		*input;
+	char		*input;
 	int			read_ret;
 	t_shell		ms;
 
@@ -142,14 +136,16 @@ int 			main(int argc, char **argv, char **envp)
 	|| minishell_setup(&ms, envp))
 		return (minishell_error());
 	read_ret = 1;
-	/*while (1)
+	while (1)
 	{
 		write(1, "minishell-1.0$ ", 15);
 		if (((read_ret = get_input(&ms, &input)) == -1)
 		|| (read_ret && ((execute_cmd(&ms, input) == -1))))
 			return (minishell_error());
-	}*/
+	}
+	gb_load();
 	gb_clear();
 	save_history(&ms);
+	tcsetattr(0, 0, &ms.term_backup);
 	return (0);
 }

@@ -19,7 +19,8 @@
 void int_handler(int sig)
 {
 	(void)sig;
-	write(1, "\nminishell-1.0$ ", 36);
+	write(1, "\nminishell-1.0$ ", 16);
+	g_global_data.sigint = true;
 	errno = 130;
 }
 
