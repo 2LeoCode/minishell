@@ -60,19 +60,23 @@ int	ft_delenv(const char *name)
 
 char	*ft_getenv(const char *name)
 {
-	int		i;
-	int		j;
-	size_t	name_len;
+	const size_t	name_len = ft_strlen(name);
+	int				i;
+	size_t			current_env_len;
 
 	i = 0;
-	name_len = ft_strlen(name);
-	while (i < g_global_data.env->count
+	while (i < g_global_data.env->count)
+	{
+				
+		current_env_len = ft_strlen(g_global_data.env->data[i]);
+		if (current_env_len > name_len
 				&& (g_global_data.env->data[i][name_len] != '='
 				|| ft_memcmp(g_global_data.env->data[i], name, name_len)))
+			break ;
 		i++;
+	}
 	if (!g_global_data.env->data[i])
 		return (NULL);
-	j = 0;
 	return (g_global_data.env->data[i] + name_len + 1);
 }
 
