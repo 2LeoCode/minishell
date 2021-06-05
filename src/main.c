@@ -100,7 +100,7 @@ static int		get_input(t_shell *ms, char **final_input)
 **	string, then we add this input to the command history, then we parse and
 **	execute the command.
 */
-static int		execute_cmd(t_shell *ms, char *input)
+static int		process_input(t_shell *ms, char *input)
 {
 	if (*input && ((!lst_size(ms->history)
 				|| ft_strcmp(input, (char*)ms->history->next->data))
@@ -140,7 +140,7 @@ int 			main(int argc, char **argv, char **envp)
 	{
 		write(1, "minishell-1.0$ ", 15);
 		if (((read_ret = get_input(&ms, &input)) == -1)
-		|| (read_ret && ((execute_cmd(&ms, input) == -1))))
+		|| (read_ret && ((process_input(&ms, input) == -1))))
 			return (minishell_error());
 	}
 	gb_load();
