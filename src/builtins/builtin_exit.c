@@ -24,10 +24,8 @@ int builtin_exit(int ac, char ** av, char ** ep)
 
 	(void)ep;
 	write(1, "exit\n", 5);
-	if (ac < 2)
-		minishell_clear(NULL);
 	if (ac == 1)
-		exit(0);
+		minishell_exit(0);
 	else if (!ft_strisdigit(*av)
 	|| (((ret = ft_atoll(*av)) < 0) && !(ng = ft_strchr(*av, '-')))
 	|| ((ret > 0) && ng))
@@ -35,8 +33,7 @@ int builtin_exit(int ac, char ** av, char ** ep)
 		write(2, "minishell: exit: ", 6);
 		ft_putstr_fd(*av, 2);
 		write(2, ": numeric argument required\n", 28);
-		minishell_clear(NULL);
-		exit(255);
+		minishell_exit(255);
 	}
 	if (ac > 2)
 	{

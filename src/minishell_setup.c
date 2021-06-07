@@ -12,6 +12,8 @@
 
 #include <minishell.h>
 
+struct s_globaldata	g_global_data = {0};
+
 /*
 **	In this function we will get the current terminal attributes into two
 **	`struct termios`, one that we edit through bit mask to remove the ICANON
@@ -27,19 +29,16 @@
 **	allow us to move our cursor and insert/delete characters in the middle of
 **	our input.
 */
-struct s_globaldata	g_global_data = {
-	false,
-	0
-};
-
-static int	setup_termios(struct termios *current, struct termios *backup)
+static int	setup_termios(void)
 {
-	if ((tcgetattr(0, current) == -1)
-	|| (tcgetattr(0, backup) == -1))
+	struct termios	current;
+
+	if ((tcgetattr(0, &current) == -1)
+	|| (tcgetattr(0, &g_global_data.term_backup) == -1))
 		return (-1);
-	current->c_lflag &= ~(ICANON);
-	current->c_lflag &= ~(ECHO);
-	if (tcsetattr(0, 0, current) == -1)
+	current.c_lflag &= ~(ICANON);
+	current.c_lflag &= ~(ECHO);
+	if (tcsetattr(0, 0, &current) == -1)
 	{
 		write(2, "Error while editing terminal attributes\n", 40);
 		return (-1);
@@ -53,8 +52,8 @@ static int	setup_termios(struct termios *current, struct termios *backup)
 */
 static int	setup_termcaps(t_term * tc)
 {
-	int			ret;
-	char		*term_name;
+	int				ret;
+	char			*term_name;
 
 	if (!(term_name = ft_getenv("TERM")))
 		write(2, "Specify a terminal type with 'TERM=<type>'.\n", 44);
@@ -78,8 +77,8 @@ static int	setup_termcaps(t_term * tc)
 void		minishell_init(t_shell *ms, const char *executable_name)
 {
 	ms->executable_name = (char *)executable_name;
-	ms->history_path = NULL;
-	ms->history = NULL;
+	g_global_data.history_path = NULL;
+	g_global_data.history = NULL;
 	ms->cmd_list[0] = "cd";
 	ms->cmd_list[1] = "echo";
 	ms->cmd_list[2] = "env";
@@ -97,6 +96,19 @@ void		minishell_init(t_shell *ms, const char *executable_name)
 }
 
 /*
+**	We attach our handler functions to different signals
+*/
+sig_t		setup_signal(void)
+{
+	sig_t	ret;
+
+	ret = signal(SIGINT, &int_handler);
+	if (ret != SIG_ERR)
+		ret = signal(SIGABRT, &abort_handler);
+	return (ret);
+}
+
+/*
 **	Here we initialize all our data that needs allocation or that can fail to
 **	initialize, so global environment variables, the list containing the
 **	command history, the termcap library and the termios structures that will
@@ -109,14 +121,16 @@ int			minishell_setup(t_shell *ms, char **envp)
 
 	i = -1;
 	count = 0;
-	ms->history = lst_new();
-	if (!ms->history)
+	g_global_data.history = lst_new();
+	if (!g_global_data.history)
 		return (-1);
 	while (envp[count])
 		count++;
-	g_global_data.env = malloc(sizeof(struct s_env) + count * sizeof(char *));
+	g_global_data.env = malloc(sizeof(struct s_env) + (count + 1)
+							* sizeof(char *));
 	if (!g_global_data.env)
 		return (-1);
+	g_global_data.env->data[count] = NULL;
 	g_global_data.env->count = count;
 	while (++i < g_global_data.env->count)
 	{
@@ -130,9 +144,9 @@ int			minishell_setup(t_shell *ms, char **envp)
 		}
 	}
 	ft_addenv("HISTFILE", ".ms_history");
+	g_global_data.history_path = ".ms_history";
 	i = -1;
-	if (get_history(ms) || setup_termcaps(&ms->tcaps)
-	|| setup_termios(&ms->term_shell, &ms->term_backup))
+	if (get_history() || setup_termcaps(&ms->tcaps) || setup_termios())
 		return (-1);
 	return (0);
 }

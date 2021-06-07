@@ -17,15 +17,14 @@
 **	HISTFILE environment variable using successive `get_next_line` calls to
 **	store the command history inside our chained list.
 */
-int		get_history(t_shell *ms)
+int		get_history(void)
 {
 	char	*line;
 	int		fd;
 	int		ret;
 	int		i;
 
-	ms->history_path = ft_getenv("HISTFILE");
-	if ((fd = open(ms->history_path, O_RDONLY)) == -1)
+	if ((fd = open(g_global_data.history_path, O_RDONLY)) == -1)
 		return (-1 * (errno != ENOENT));
 	ret = 1;
 	while (ret > 0)
@@ -37,7 +36,7 @@ int		get_history(t_shell *ms)
 		while (line[i] && (line[i++] != ';'))
 			continue ;
 		if (i && (line[i - 1] == ';')
-					&& lst_push_front(ms->history, &line[i],
+					&& lst_push_front(g_global_data.history, &line[i],
 					ft_strlen(&line[i]) + 1))
 			ret = -1;
 		free(line);
@@ -50,16 +49,16 @@ int		get_history(t_shell *ms)
 **	This will simply do the opposite: read the command history from our list,
 **	and write it back into our history file.
 */
-int		save_history(t_shell *ms)
+int		save_history(void)
 {
 	int			fd;
 	t_list		*lst;
 
-	if ((fd = open(ms->history_path, O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR))
-				== -1)
+	if ((fd = open(g_global_data.history_path,
+				O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR)) == -1)
 		return (-1);
-	lst = ms->history->prev;
-	while (lst != ms->history)
+	lst = g_global_data.history->prev;
+	while (lst != g_global_data.history)
 	{
 		write(fd, ": :0;", 5);
 		ft_putendl_fd((char*)lst->data, fd);

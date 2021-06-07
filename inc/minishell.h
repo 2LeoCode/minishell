@@ -53,12 +53,14 @@
 
 /*
 **	Global struct containing the environment variables and a boolean used for
-**	CTRL-C
+**	CTRL-C, as well as the termios backup struct and the command history
 */
-
 extern struct	s_globaldata
 {
-	bool	sigint;
+	bool			sigint;
+	struct termios	term_backup;
+	t_list			*history;
+	char			*history_path;
 	struct	s_env
 	{
 		int		count;
@@ -123,12 +125,7 @@ typedef struct	s_term
 */
 typedef struct			s_shell
 {
-	struct termios		term_shell;
-	struct termios		term_backup;
 	t_term				tcaps;
-	t_list				*history;
-	int					history_index;
-	char				*history_path;
 	char				*executable_name;
 	char				*cmd_list[CMD_COUNT];
 	t_builtin_fun		builtin_fct_list[CMD_COUNT];
@@ -161,13 +158,14 @@ void	abort_handler(int);
 */
 void	minishell_clear(void *data);
 void	minishell_init(t_shell *, const char *);
+sig_t	setup_signal(void);
 int		minishell_setup(t_shell *, char **);
 
 /*
 **	history.c
 */
-int		get_history(t_shell *);
-int		save_history(t_shell *);
+int		get_history(void);
+int		save_history(void);
 
 /*
 **	key_process_0.c
@@ -188,10 +186,15 @@ int		update_input(const t_term *, t_input *);
 /*
 **	minishell_env.c
 */
-int			ft_addenv(const char *name, const char *value);
-int 		ft_delenv(const char *name);
-char		*ft_getenv(const char *name);
-int			ft_setenv(const char *name, const char *value);
-void		ft_clearenv(void);
-void		ft_printenv(void);
+int		ft_addenv(const char *name, const char *value);
+int 	ft_delenv(const char *name);
+char	*ft_getenv(const char *name);
+int		ft_setenv(const char *name, const char *value);
+void	ft_clearenv(void);
+void	ft_printenv(void);
+
+/*
+**	minishell_exit.c
+*/
+void	minishell_exit(int ret);
 #endif

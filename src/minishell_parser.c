@@ -60,5 +60,4 @@ t_cmd	**parser(char **tokens)
 		if (**tokens == "|")
 			cmd_arr->pipe = true;
 	}
-}
-*/
+}*/

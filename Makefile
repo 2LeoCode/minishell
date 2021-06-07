@@ -20,14 +20,16 @@ SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
 			$(addprefix key_processing/key_process_,\
 			0\
 			1)\
-			error\
-			history\
 			main\
-			minishell_env\
-			minishell_clear\
-			minishell_parser\
-			minishell_setup\
-			sig_handling)
+			$(addprefix minishell_,\
+			history\
+			error\
+			exit\
+			env\
+			clear\
+			parser\
+			setup)\
+			signal_handling)
 INC =		$(addsuffix $(word 3, $(.SUFFIXES)),\
 			libft\
 			get_next_line\

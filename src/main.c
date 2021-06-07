@@ -49,7 +49,7 @@ static int		process_key(t_shell *ms, t_input *input, int key)
 	else if (key == _KEY_RIGHT)
 		return (process_key_right(&ms->tcaps, input));
 	else if (((key == _KEY_UP) || (key == _KEY_DOWN))
-	&& !!(ret = process_key_hist(ms->history, input, key)))
+	&& !!(ret = process_key_hist(g_global_data.history, input, key)))
 		return (-1 * (ret == -1));
 	return (update_input(&ms->tcaps, input));
 }
@@ -81,7 +81,7 @@ static int		get_input(t_shell *ms, char **final_input)
 		return (-1);
 	input.index = 0;
 	input.prev_index = 0;
-	input.hist = ms->history;
+	input.hist = g_global_data.history;
 	input.prev_len = 0;
 	while (!(ret = process_key(ms, &input, ft_getchar())))
 		continue ;
@@ -102,30 +102,34 @@ static int		get_input(t_shell *ms, char **final_input)
 */
 static int		process_input(t_shell *ms, char *input)
 {
-	if (*input && ((!lst_size(ms->history)
-				|| ft_strcmp(input, (char*)ms->history->next->data))
-				&& lst_push_front(ms->history, input, ft_strlen(input) + 1)))
+	(void)ms;
+	if (*input && ((!lst_size(g_global_data.history)
+				|| ft_strcmp(input, (char*)g_global_data.history->next->data))
+				&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1)))
 		return (-1);
 	return (0);
 }
 
-/*
-**	We attach our handler functions to different signals
-*/
-static sig_t	setup_signal(void)
+static void		prompt(t_shell *ms, char **input_ptr)
 {
-	sig_t	ret;
+	int	read_ret;
 
-	ret = signal(SIGINT, &int_handler);
-	if (ret != SIG_ERR)
-		ret = signal(SIGABRT, &abort_handler);
-	return (ret);
+	read_ret = 1;
+	while (1)
+	{
+		write(1, "minishell-1.0$ ", 15);
+		if (((read_ret = get_input(ms, input_ptr)) == -1)
+					|| (read_ret && ((process_input(ms, *input_ptr) == -1))))
+		{
+			perror("minishell");
+			minishell_exit(-1);
+		}
+	}
 }
 
 int 			main(int argc, char **argv, char **envp)
 {
 	char		*input;
-	int			read_ret;
 	t_shell		ms;
 
 	(void)argc;
@@ -135,17 +139,6 @@ int 			main(int argc, char **argv, char **envp)
 	if ((setup_signal() == SIG_ERR)
 	|| minishell_setup(&ms, envp))
 		return (minishell_error());
-	read_ret = 1;
-	while (1)
-	{
-		write(1, "minishell-1.0$ ", 15);
-		if (((read_ret = get_input(&ms, &input)) == -1)
-		|| (read_ret && ((process_input(&ms, input) == -1))))
-			return (minishell_error());
-	}
-	gb_load();
-	gb_clear();
-	save_history(&ms);
-	tcsetattr(0, 0, &ms.term_backup);
+	prompt(&ms, &input);
 	return (0);
 }
