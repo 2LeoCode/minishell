@@ -82,18 +82,18 @@ int     check_quotes(char *str)
     i = 0;
     while (str[i])
     {
-        if (str[i] == '"')
+        if (str[i] == '"' && (i == 0 || str[i - 1] != '\\'))
         {
             i++;
-            while (str[i] && str[i] != '"')
+            while (str[i] && str[i] != '"' && str[i - 1] != '\\')
                 i++;
-            if (str[i] != '"')
+            if (str[i] != '"' )
                 return (4);
         }
-        else if (str[i] == '\'')
+        else if (str[i] == '\'' && (i == 0 || str[i - 1] != '\\'))
         {
             i++;
-            while (str[i] && str[i] != '\'')
+            while (str[i] && str[i] != '\'' && str[i - 1] != '\\')
                 i++;
             if (str[i] != '\'')
                 return (4);
@@ -117,6 +117,8 @@ size_t	skip_quote_token(char *str)
 	size_t	i;
 
 	i = 0;
+	if (str[i] && i != 0 && str[i - 1] != '\\')
+		return (1);
 	if (str[i] == '"')
 	{
 		i++;
@@ -125,7 +127,7 @@ size_t	skip_quote_token(char *str)
 		if (str[i] == '"')
 			i++;
 	}
-	else
+	else if (str[i] == '\'')
 	{
 		i++;
 		while (str[i] && (str[i] != '\''))
