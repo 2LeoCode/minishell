@@ -22,3 +22,8 @@ void	minishell_clear(void *data)
 	ms = (t_shell *)data;
 	lst_destroy(g_global_data.history);
 }
+
+void	lst_destroy_raw(void *data)
+{
+	lst_destroy(data);
+}

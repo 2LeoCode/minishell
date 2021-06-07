@@ -10,16 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
+#include "minishell.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-int     ft_isspace(char c)
-{
-    return (c == ' ' || c == '\f' || c == '\r' || c == '\n' || c == '\v' || c == '\t');
-}
 
 size_t  ft_skip_whitespace(char *str)
 {
@@ -65,7 +60,7 @@ int     check_operator_excess(char *str)
     i = 0;
     while (str[i])
     {
-        if (strchr("<>|;", str[i]))
+        if (ft_strchr("<>|;", str[i]))
         {
             printf("i = %i\n", i);
             if (str[i] == '>' && str[i + 1] == '>')
@@ -134,7 +129,7 @@ size_t	get_next_token(char *str)
 	else
 	{
 
-		while (str[i] && !strchr(" |<>;", str[i]))
+		while (str[i] && !ft_strchr(" |<>;", str[i]))
 		{
 			if (str[i] == '\'' || str[i] == '\"')
 				i += skip_quote_token(&str[i]);
@@ -171,51 +166,55 @@ char	*token_alloc(char *str)
 	size_t	i;
 
 	i = 0;
-	while (str[i] && !strchr(" |<>;", str[i]))
+	while (str[i] && !ft_strchr(" |<>;", str[i]))
 	{
 		if (str[i] == '\'' || str[i] == '\"')
 			i += skip_quote_token(&str[i]);
 		else
 			i++;
 	}
-	if (strchr("|<>;", str[0]))
-	{
-		token = strndup(str, 1);
-	}
+	if (str[0] == '>' && str[1] == '>')
+		token = ft_strdup(">>");
+	else if (ft_strchr("|<>;", str[0]))
+		token = ft_strndup(str, 1);
 	else
-		token = strndup(str, i);
+		token = ft_strndup(str, i);
 	return (token);
 }
 
 char	**tkntab_alloc(char *str, size_t cnt)
 {
-	char	**tab;
+	char	**arr;
 	size_t	i;
 	size_t	j;
 
-	tab = malloc(sizeof(char *) * cnt + 1);  // MALLOC !
-//	if (tab == NULL)
-//		MINISHELL_FAILURE;
+	if (gb_alloc((void **)&arr, sizeof(char *) * (cnt + 1)))
+		return (NULL);
 	i = ft_skip_whitespace(str);
 	j = 0;
 	while (str[i])
 	{
-		tab[j] = token_alloc(str + i);
+		arr[j] = token_alloc(str + i);
+		if (!arr[j])
+		{
+			ft_destroy_array((void **)arr, NULL_ENDED);
+			return (NULL);
+		}
 		i += get_next_token(str + i);
 		j++;
 	}
-	tab[j] = NULL;
-	return (tab);
+	arr[j] = NULL;
+	return (arr);
 }
 
 
 char **lexer(char *input_str)
 {
-	size_t	cnt;
+	const size_t	cnt = token_cnt(input_str);
 
 //	if (check_syntax(str))
 //		return (NULL);
-	cnt = token_cnt(input_str);
+	gb_save();
 	return (tkntab_alloc(input_str, cnt));
 }
 
@@ -240,7 +239,7 @@ int main(int argc, char **argv)
 }
 */
 
-int main(void)
+/*int main(void)
 {
 	int n;
 	char *str = "bonjour |     ";
@@ -248,3 +247,4 @@ int main(void)
 	n = check_last_character(str);
 	printf("%i\n", n);
 }
+*/

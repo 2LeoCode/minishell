@@ -206,4 +206,11 @@ void	minishell_exit(int ret);
 char	**lexer(char *input_str);
 t_cmd	**parser(char **tokens);
 
+/*
+**	minishell_clear.c
+*/
+
+void	minishell_clear(void *data);
+void	lst_destroy_raw(void *data);
+
 #endif

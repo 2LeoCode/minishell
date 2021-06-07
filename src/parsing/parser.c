@@ -19,7 +19,7 @@ static size_t	cmd_count(char **tokens)
 	count = 1;
 	while (*tokens)
 	{
-		if (**tokens ==  "|" || (**tokens == ";" && tokens[1]))
+		if (**tokens ==  '|' || (**tokens == ';' && tokens[1]))
 			count++;
 		tokens++;
 	}
@@ -33,7 +33,7 @@ static int	arg_count(char **tokens)
 	count = 1;
 	while (*tokens && **tokens != '|' && **tokens != ';')
 	{
-		if (*tokens == '>' || *tokens == '<')
+		if (**tokens == '>' || **tokens == '<')
 			tokens++;
 		else
 			count++;
@@ -42,7 +42,7 @@ static int	arg_count(char **tokens)
 	return (count);
 }
 
-static int	parse_token(char ***token_ptr, t_cmd *current_cmd)
+static int	parse_token(char ***token_ptr, t_cmd *current_cmd, unsigned int *index)
 {
 	if (***token_ptr == '>')
 	{
@@ -50,7 +50,7 @@ static int	parse_token(char ***token_ptr, t_cmd *current_cmd)
 		current_cmd->redirect_out2 = **token_ptr[1];
 		free(**token_ptr);
 		*((*token_ptr)++) = NULL;
-		if (lst_push_front(current_cmd->out, **token_ptr))
+		if (lst_push_front(current_cmd->out, **token_ptr, ft_strlen(**token_ptr) + 1))
 			return (-1);
 		free(**token_ptr);
 	}
@@ -64,7 +64,7 @@ static int	parse_token(char ***token_ptr, t_cmd *current_cmd)
 		}
 	}
 	else
-		current_cmd->argv[j++] = **token_ptr;
+		current_cmd->argv[(*index)++] = **token_ptr;
 	return (0);
 }
 
@@ -75,12 +75,13 @@ static int	parse_command(char ***token_ptr, t_cmd *current_cmd)
 	j = 0;
 	while (***token_ptr != '|' && ***token_ptr != ';')
 	{
-		if (parse_token(token_ptr, current_cmd))
+		if (parse_token(token_ptr, current_cmd, &j))
 			return (-1);
 		(*token_ptr)++;
 	}
 	if (***token_ptr == '|')
 		current_cmd->pipe = true;
+	return (0);
 }
 
 t_cmd	**parser(char **tokens)
@@ -88,23 +89,23 @@ t_cmd	**parser(char **tokens)
 	const size_t	count = cmd_count(tokens);
 	size_t			ac;
 	t_cmd			**cmd_arr;
-	int				i;
+	size_t			i;
 
-	gb_save();
-	if (gb_alloc(&cmd_arr, sizeof(t_cmd *) * (count + 1)))
+	i = ((size_t)-1);
+	if (gb_alloc((void **)&cmd_arr, sizeof(t_cmd *) * (count + 1)))
 		return (NULL);
 	cmd_arr[count] = NULL;
 	i = -1;
 	while (++i < count)
 	{
 		ac = arg_count(tokens);
-		if (gb_alloc(&cmd_arr[i], sizeof(t_cmd) + ac * sizeof(char *))
+		if (gb_alloc((void **)&cmd_arr[i], sizeof(t_cmd) + ac * sizeof(char *))
 					|| lst_init(&cmd_arr[i]->out))
 			return (NULL);
-		gb_add(cmd_arr[i]->out, lst_destroy);
+		gb_add(cmd_arr[i]->out, lst_destroy_raw);
 		cmd_arr[i]->in = NULL;
 		cmd_arr[i]->argc = ac;
-		if (parse_command(&tokens))
+		if (parse_command(&tokens, cmd_arr[i]))
 			return (NULL);
 	}
 	return (cmd_arr);

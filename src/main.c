@@ -102,17 +102,46 @@ static int		get_input(t_shell *ms, char **final_input)
 */
 static int		process_input(t_shell *ms, char *input)
 {
+	t_cmd	**cmd_array;
+	char	**tokens;
+
 	(void)ms;
 	if (*input && ((!lst_size(g_global_data.history)
 				|| ft_strcmp(input, (char*)g_global_data.history->next->data))
 				&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1)))
 		return (-1);
+	gb_save();
+	cmd_array = NULL;
+	tokens = lexer(input);
+	for (int i = 0; tokens[i]; i++)
+		printf("%s\n", tokens[i]);
+	if (tokens)
+		cmd_array = parser(tokens);
+	if (!tokens || !cmd_array)
+	{
+		perror("minishell");
+		minishell_exit(-1);
+	}
+	for (int i = 0; cmd_array[i]; i++)
+	{
+		printf("cmd %d:\npipe: %d\n"
+				"redirect-in: %d\n"
+				"redirect-out: %d\n"
+				"redirect-out2: %d\n"
+				"in: %s\n"
+				"out: %s\n"
+				"ac: %d\n"
+				"av:", i, cmd_array[i]->pipe);
+		for (int j = 0; j < cmd_array[i]->argc; j++)
+			printf(" %s", cmd_array[i]->argv[j]);
+		printf("\n");
+	}
 	return (0);
 }
 
 static void		prompt(t_shell *ms, char **input_ptr)
 {
-	int	read_ret;
+	int		read_ret;
 
 	read_ret = 1;
 	while (1)
