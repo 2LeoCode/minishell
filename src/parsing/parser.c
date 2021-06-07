@@ -30,7 +30,7 @@ static int	arg_count(char **tokens)
 {
 	int	count;
 
-	count = 1;
+	count = 0;
 	while (*tokens && **tokens != '|' && **tokens != ';')
 	{
 		if (**tokens == '>' || **tokens == '<')
@@ -42,60 +42,61 @@ static int	arg_count(char **tokens)
 	return (count);
 }
 
-static int	parse_token(char ***token_ptr, t_cmd *current_cmd, unsigned int *index)
+static char	**parse_token(char **token, t_cmd *current_cmd, unsigned int *index)
 {
-	if (***token_ptr == '>')
+	if (**token == '>')
 	{
-		current_cmd->redirect_out = !**token_ptr[1];
-		current_cmd->redirect_out2 = **token_ptr[1];
-		free(**token_ptr);
-		*((*token_ptr)++) = NULL;
-		if (lst_push_front(current_cmd->out, **token_ptr, ft_strlen(**token_ptr) + 1))
-			return (-1);
-		free(**token_ptr);
+		current_cmd->redirect_out = !(*token)[1];
+		current_cmd->redirect_out2 = (*token)[1];
+		free(*token);
+		*token++ = NULL;
+		if (lst_push_front(current_cmd->out, *token, ft_strlen(*token) + 1))
+			return (NULL);
+		free(*token);
+		*token = NULL;
 	}
-	else if (***token_ptr == '<')
+	else if (**token == '<')
 	{
 		current_cmd->redirect_in = true;
-		if (current_cmd->in)
-		{
-			free(current_cmd->in);
-			current_cmd->in = *(++(*token_ptr));
-		}
+		current_cmd->in = *++token;
 	}
 	else
-		current_cmd->argv[(*index)++] = **token_ptr;
-	return (0);
+		current_cmd->argv[(*index)++] = *token;
+	return (token);
 }
 
-static int	parse_command(char ***token_ptr, t_cmd *current_cmd)
+static char	**parse_command(char **tokens, t_cmd *current_cmd)
 {
 	unsigned int	j;
+	char			**tmp;
 
 	j = 0;
-	while (***token_ptr != '|' && ***token_ptr != ';')
+	while (*tokens && **tokens != '|' && **tokens != ';')
 	{
-		if (parse_token(token_ptr, current_cmd, &j))
-			return (-1);
-		(*token_ptr)++;
+		tmp = parse_token(tokens, current_cmd, &j);
+		if (!tmp)
+			return (NULL);
+		tokens = tmp + 1;
 	}
-	if (***token_ptr == '|')
+	if (*tokens && **tokens == '|')
 		current_cmd->pipe = true;
-	return (0);
+	free(*tokens);
+	*tokens++ = NULL;
+	return (tokens);
 }
 
 t_cmd	**parser(char **tokens)
 {
 	const size_t	count = cmd_count(tokens);
-	size_t			ac;
+	int				ac;
 	t_cmd			**cmd_arr;
+	char			**tmp;
 	size_t			i;
 
-	i = ((size_t)-1);
 	if (gb_alloc((void **)&cmd_arr, sizeof(t_cmd *) * (count + 1)))
 		return (NULL);
 	cmd_arr[count] = NULL;
-	i = -1;
+	i = ((size_t)-1);
 	while (++i < count)
 	{
 		ac = arg_count(tokens);
@@ -105,8 +106,14 @@ t_cmd	**parser(char **tokens)
 		gb_add(cmd_arr[i]->out, lst_destroy_raw);
 		cmd_arr[i]->in = NULL;
 		cmd_arr[i]->argc = ac;
-		if (parse_command(&tokens, cmd_arr[i]))
+		printf("[   %zu   ]\n", i);
+		tmp = parse_command(tokens, cmd_arr[i]);
+		if (!tmp)
+		{
+			ft_destroy_array((void **)tokens, count);
 			return (NULL);
+		}
+		tokens = tmp;
 	}
 	return (cmd_arr);
 }

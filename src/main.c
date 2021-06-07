@@ -115,26 +115,13 @@ static int		process_input(t_shell *ms, char *input)
 	tokens = lexer(input);
 	for (int i = 0; tokens[i]; i++)
 		printf("%s\n", tokens[i]);
+	printf("OK1\n");
 	if (tokens)
 		cmd_array = parser(tokens);
 	if (!tokens || !cmd_array)
 	{
 		perror("minishell");
 		minishell_exit(-1);
-	}
-	for (int i = 0; cmd_array[i]; i++)
-	{
-		printf("cmd %d:\npipe: %d\n"
-				"redirect-in: %d\n"
-				"redirect-out: %d\n"
-				"redirect-out2: %d\n"
-				"in: %s\n"
-				"out: %s\n"
-				"ac: %d\n"
-				"av:", i, cmd_array[i]->pipe);
-		for (int j = 0; j < cmd_array[i]->argc; j++)
-			printf(" %s", cmd_array[i]->argv[j]);
-		printf("\n");
 	}
 	return (0);
 }
