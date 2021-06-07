@@ -47,8 +47,7 @@ int     check_last_character(char *str)
     i--;
     while (i > 0 && ft_isspace(str[i]))
         i--;
-    //  printf("%zu %c\n", i, str[i]);
-    if (str[i] == '|')
+    if (ft_strchr("<>|", str[i]))
         return (2);
     return (0);
 }
@@ -62,18 +61,42 @@ int     check_operator_excess(char *str)
     {
         if (ft_strchr("<>|;", str[i]))
         {
-            printf("i = %i\n", i);
             if (str[i] == '>' && str[i + 1] == '>')
                 i++;
             i++;
-            i += ft_skip_whitespace(str + i);
-            printf("i = %i\n", i);
-            printf("str[i] = %c\n", str[i]);
-            if (strchr("<>|;", str[i]))
-            {
-                write(1, "kek\n", 4);
+            i += ft_skip_whitespace(str + i); 
+            if (str[i] == 0)
+                return (0);
+            else if (ft_strchr("<>|;", str[i]))
                 return (3);
-            }
+        }
+        i++;
+    }   
+    return (0);
+}
+
+int     check_quotes(char *str)
+{
+    int i;
+
+    i = 0;
+    while (str[i])
+    {
+        if (str[i] == '"')
+        {
+            i++;
+            while (str[i] && str[i] != '"')
+                i++;
+            if (str[i] != '"')
+                return (4);
+        }
+        else if (str[i] == '\'')
+        {
+            i++;
+            while (str[i] && str[i] != '\'')
+                i++;
+            if (str[i] != '\'')
+                return (4);
         }
         i++;
     }
