@@ -213,7 +213,8 @@ char	**tkntab_alloc(char *str, size_t cnt)
 	size_t	i;
 	size_t	j;
 
-	if (gb_alloc((void **)&arr, sizeof(char *) * (cnt + 1)))
+	arr = malloc(sizeof(char *) * (cnt + 1));
+	if (!arr)
 		return (NULL);
 	i = ft_skip_whitespace(str);
 	j = 0;
@@ -239,7 +240,6 @@ char **lexer(char *input_str)
 
 //	if (check_syntax(str))
 //		return (NULL);
-	gb_save();
 	return (tkntab_alloc(input_str, cnt));
 }
 
