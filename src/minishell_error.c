@@ -21,10 +21,18 @@ int minishell_error(void)
 	return (-1);
 }
 
-int	parsing_error(char unexpected_token)
+int	command_error(char *command)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(command, 2);
+	ft_putendl_fd(": command not found", 2);
+	return (-1);
+}
+
+int	syntax_error(char *unexpected_token)
 {
 	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-	ft_putchar_fd(unexpected_token, 2);
+	ft_putstr_fd(unexpected_token, 2);
 	ft_putendl_fd("'", 2);
 	return (-1);
 }

@@ -1,3 +1,4 @@
+OS =		$(shell uname)
 SHELL =		/bin/sh
 NAME =		minishell
 
@@ -27,8 +28,10 @@ SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
 			exit\
 			env\
 			clear\
-			parser\
 			setup)\
+			$(addprefix parsing/,\
+			lexer\
+			parser)\
 			signal_handling)
 INC =		$(addsuffix $(word 3, $(.SUFFIXES)),\
 			libft\
@@ -47,16 +50,28 @@ CC =		gcc
 CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror -fsanitize=address -g3
 LCFLAGS =	$(addprefix -L, $(LIBDIR)) lib/libft.a lib/liblist.a lib/libgb.a lib/libgnl.a $(addprefix -l, $(LIB))
 
-####    COLORS    ####
-KNRM =		\x1B[0m
-KRED =		\x1B[31m
-KGRN =		\x1B[32m
-KYEL =		\x1B[33m
-KBLU =		\x1B[34m
-KMAG =		\x1B[35m
-KCYN =		\x1B[36m
-KWHT =		\x1B[37m
+ifeq ($(OS), Darwin)
+####  COLORS MAC  ####
+	KNRM =		\x1B[0m
+	KRED =		\x1B[31m
+	KGRN =		\x1B[32m
+	KYEL =		\x1B[33m
+	KBLU =		\x1B[34m
+	KMAG =		\x1B[35m
+	KCYN =		\x1B[36m
+	KWHT =		\x1B[37m
 ######################
+else
+#### COLORS LINUX ####
+	KNRM =		\e[39m
+	KRED =		\e[31m
+	KGRN =		\e[32m
+	KYEL =		\e[33m
+	KBLU =		\e[34m
+	KMAG =		\e[35m
+	KCYN =		\e[36m
+	KWHT =		\e[37m
+endif
 
 all: libraries $(OBJDIR) $(NAME)
 	@printf "$(KGRN)\`$(NAME)\` is up to date.\n$(KNRM)"
@@ -65,7 +80,7 @@ $(OBJDIR):
 	@printf "$(KYEL)➤ "
 	mkdir $@
 	@printf "➤ "
-	mkdir $@/builtins $@/key_processing
+	mkdir $@/builtins $@/key_processing $@/parsing
 	@printf "$(KNRM)"
 
 $(NAME): $(addprefix $(OBJDIR)/, $(OBJ))

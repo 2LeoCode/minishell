@@ -146,6 +146,8 @@ int		builtin_unset(int, char **, char **);
 **	error.c
 */
 int		minishell_error(void);
+int		command_error(char *command);
+int		syntax_error(char *unexpected_token);
 
 /*
 **	sig_handling.c
@@ -197,4 +199,11 @@ void	ft_printenv(void);
 **	minishell_exit.c
 */
 void	minishell_exit(int ret);
+
+/*
+**	parsing
+*/
+char	**lexer(char *input_str);
+t_cmd	**parser(char **tokens);
+
 #endif
