@@ -12,6 +12,12 @@
 
 #include <minishell.h>
 
+static void		*parser_failure(char **tokens)
+{
+	ft_destroy_array(tokens);
+	return (NULL);
+}
+
 static size_t	cmd_count(char **tokens)
 {
 	size_t	count;
@@ -19,7 +25,7 @@ static size_t	cmd_count(char **tokens)
 	count = 1;
 	while (*tokens)
 	{
-		if (**tokens ==  '|' || (**tokens == ';' && tokens[1]))
+		if (**tokens == '|' || (**tokens == ';' && tokens[1]))
 			count++;
 		tokens++;
 	}
@@ -140,10 +146,7 @@ t_cmd	**parser(char **tokens)
 		cmd_arr[i]->argc = ac;
 		tmp = parse_command(tokens, cmd_arr[i]);
 		if (!tmp)
-		{
-			ft_destroy_array((void **)tokens, count);
-			return (NULL);
-		}
+			return (parser_failure(tokens, count));
 		tokens = tmp;
 	}
 	return (cmd_arr);
