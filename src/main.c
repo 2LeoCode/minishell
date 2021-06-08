@@ -110,9 +110,9 @@ static int		process_input(t_shell *ms, char *input)
 				|| ft_strcmp(input, (char*)g_global_data.history->next->data))
 				&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1)))
 		return (-1);
-	gb_save();
 	cmd_array = NULL;
 	tokens = lexer(input);
+	gb_save();
 	if (tokens)
 		cmd_array = parser(tokens);
 	if (!tokens || !cmd_array)
@@ -120,6 +120,30 @@ static int		process_input(t_shell *ms, char *input)
 		perror("minishell");
 		minishell_exit(-1);
 	}
+	for (int i = 0; cmd_array[i]; i++)
+	{
+		printf("---> Command %d <---\n\n", i);
+		printf(	"pipe: %d\n"
+				"r_in: %d\n"
+				"r_out: %d\n"
+				"r_out2: %d\n"
+				"in: %s\n"
+				"out:",
+				cmd_array[i]->pipe,
+				cmd_array[i]->redirect_in,
+				cmd_array[i]->redirect_out,
+				cmd_array[i]->redirect_out2,
+				cmd_array[i]->in);
+		for (t_list *it = cmd_array[i]->out->next; it != cmd_array[i]->out; it = it->next)
+			printf(" %s", it->data);
+		printf(	"\nargc: %d\n"
+				"argv:",
+				cmd_array[i]->argc);
+		for (int j = 0; j < cmd_array[i]->argc; j++)
+			printf(" %s", cmd_array[i]->argv[j]);
+		printf("\n\n");
+	}
+	gb_clear();
 	return (0);
 }
 

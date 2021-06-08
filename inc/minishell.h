@@ -123,12 +123,12 @@ typedef struct	s_term
 /*
 **	Big main structure containing all the data we need for the project.
 */
-typedef struct			s_shell
+typedef struct		s_shell
 {
-	t_term				tcaps;
-	char				*executable_name;
-	char				*cmd_list[CMD_COUNT];
-	t_builtin_fun		builtin_fct_list[CMD_COUNT];
+	t_term			tcaps;
+	char			*executable_name;
+	char			*cmd_list[CMD_COUNT];
+	t_builtin_fun	builtin_fct_list[CMD_COUNT];
 }	t_shell;
 
 /*

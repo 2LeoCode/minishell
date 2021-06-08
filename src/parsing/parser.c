@@ -14,7 +14,7 @@
 
 static void		*parser_failure(char **tokens)
 {
-	ft_destroy_array(tokens);
+	ft_destroy_array((void **)tokens, NULL_ENDED);
 	return (NULL);
 }
 
@@ -94,32 +94,35 @@ static char	**parse_command(char **tokens, t_cmd *current_cmd)
 int		replace_env_tokens(char **tokens)
 {
 	char	**begin;
+	char	*env;
 	char	*ptr;
 	char	*to_replace;
-	size_t	var_size;
 
 	begin = tokens;
 	while (*tokens)
 	{
 		if (**tokens != '\'')
 		{
-			ptr = *tokens;
-			while (*ptr)
+			ptr = ft_strchr(*tokens, '$');
+			while (ptr)
 			{
-				if (*ptr == '$')
+				to_replace = ft_strndup(ptr, ft_wrdlen(ptr));
+				if (!to_replace)
+					return ((int)parser_failure(begin) - 1);
+				env = ft_getenv(to_replace + 1);
+				if (!env)
+					env = "";
+				if (ft_strreplace_first(tokens, to_replace, env, free))
 				{
-					to_replace = get_var(ptr);
-					if (!to_replace)
-					{
-						ft_destroy_array(begin, NULL_ENDED);
-						return (0);
-					}
-					
+					free(to_replace);
+					return ((int)parser_failure(begin) - 1);
 				}
+				ptr = ft_strchr(ptr + 1, '$');
 			}
 		}
 		tokens++;
 	}
+	return (0);
 }
 
 t_cmd	**parser(char **tokens)
@@ -130,7 +133,7 @@ t_cmd	**parser(char **tokens)
 	char			**tmp;
 	size_t			i;
 
-	if (replace_env_tokens(&tokens)
+	if (replace_env_tokens(tokens)
 				|| gb_alloc((void **)&cmd_arr, sizeof(t_cmd *) * (count + 1)))
 		return (NULL);
 	cmd_arr[count] = NULL;
@@ -146,7 +149,7 @@ t_cmd	**parser(char **tokens)
 		cmd_arr[i]->argc = ac;
 		tmp = parse_command(tokens, cmd_arr[i]);
 		if (!tmp)
-			return (parser_failure(tokens, count));
+			return (parser_failure(tokens));
 		tokens = tmp;
 	}
 	return (cmd_arr);

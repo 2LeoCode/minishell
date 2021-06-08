@@ -70,7 +70,7 @@ char	*ft_getenv(const char *name)
 				&& g_global_data.env->data[i][name_len] == '='
 				&& !ft_memcmp(g_global_data.env->data[i], name, name_len))
 			break ;
-	if (!g_global_data.env->data[i])
+	if (i == g_global_data.env->count)
 		return (NULL);
 	return (g_global_data.env->data[i] + name_len + 1);
 }
