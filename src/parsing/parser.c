@@ -85,6 +85,37 @@ static char	**parse_command(char **tokens, t_cmd *current_cmd)
 	return (tokens);
 }
 
+int		replace_env_tokens(char **tokens)
+{
+	char	**begin;
+	char	*ptr;
+	char	*to_replace;
+	size_t	var_size;
+
+	begin = tokens;
+	while (*tokens)
+	{
+		if (**tokens != '\'')
+		{
+			ptr = *tokens;
+			while (*ptr)
+			{
+				if (*ptr == '$')
+				{
+					to_replace = get_var(ptr);
+					if (!to_replace)
+					{
+						ft_destroy_array(begin, NULL_ENDED);
+						return (0);
+					}
+					
+				}
+			}
+		}
+		tokens++;
+	}
+}
+
 t_cmd	**parser(char **tokens)
 {
 	const size_t	count = cmd_count(tokens);
@@ -93,7 +124,8 @@ t_cmd	**parser(char **tokens)
 	char			**tmp;
 	size_t			i;
 
-	if (gb_alloc((void **)&cmd_arr, sizeof(t_cmd *) * (count + 1)))
+	if (replace_env_tokens(&tokens)
+				|| gb_alloc((void **)&cmd_arr, sizeof(t_cmd *) * (count + 1)))
 		return (NULL);
 	cmd_arr[count] = NULL;
 	i = ((size_t)-1);
@@ -106,7 +138,6 @@ t_cmd	**parser(char **tokens)
 		gb_add(cmd_arr[i]->out, lst_destroy_raw);
 		cmd_arr[i]->in = NULL;
 		cmd_arr[i]->argc = ac;
-		printf("[   %zu   ]\n", i);
 		tmp = parse_command(tokens, cmd_arr[i]);
 		if (!tmp)
 		{
