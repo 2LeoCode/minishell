@@ -36,9 +36,9 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 				S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 		if (!(*cmd_arr)->pipe)
 		{
-
+			EXECUTE_COMMAND
 		}
-		else PIPE/FORK
+		else PIPE/FORK EXECUTE
 	}
 	return (0);
 }
