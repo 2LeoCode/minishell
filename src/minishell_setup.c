@@ -146,7 +146,6 @@ int			minishell_setup(t_shell *ms, char **envp)
 	g_global_data.history_path = ft_getenv("HISTFILE");
 	if (!g_global_data.history_path)
 		g_global_data.history_path = ".ms_history";
-	i = -1;
 	if (get_history() || setup_termcaps(&ms->tcaps) || setup_termios())
 		return (-1);
 	return (0);
