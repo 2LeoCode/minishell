@@ -13,17 +13,10 @@
 #include <minishell.h>
 
 /*
-**	Destructor for the t_shell struct, that we will pass to `gb_add`
+**	Destroys all global data
 */
-void	minishell_clear(void *data)
+void	minishell_clear(void)
 {
-	t_shell	*ms;
-
-	ms = (t_shell *)data;
 	lst_destroy(g_global_data.history);
-}
-
-void	lst_destroy_raw(void *data)
-{
-	lst_destroy(data);
+	ft_clearenv();
 }

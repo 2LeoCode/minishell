@@ -95,6 +95,16 @@ static int		get_input(t_shell *ms, char **final_input)
 	return (ret);
 }
 
+size_t	token_count(const char **tokens)
+{
+	size_t	count;
+
+	count = 0;
+	while (tokens[count])
+		count++;
+	return (count);
+}
+
 /*
 **	The parse-and-execute part: we send an input to this function through a
 **	string, then we add this input to the command history, then we parse and
@@ -104,6 +114,8 @@ static int		process_input(t_shell *ms, char *input)
 {
 	t_cmd	**cmd_array;
 	char	**tokens;
+	size_t	token_cnt;
+	int		ret;
 
 	(void)ms;
 	if (*input && ((!lst_size(g_global_data.history)
@@ -112,15 +124,15 @@ static int		process_input(t_shell *ms, char *input)
 		return (-1);
 	cmd_array = NULL;
 	tokens = lexer(input);
-	gb_save();
+	token_cnt = token_count(tokens);
 	if (tokens)
-		cmd_array = parser(tokens);
+		cmd_array = parser(tokens, token_cnt);
 	if (!tokens || !cmd_array)
 	{
-		perror("minishell");
-		minishell_exit(-1);
+		ft_destroy_array(tokens, token_cnt);
+		minishell_error();
 	}
-	for (int i = 0; cmd_array[i]; i++)
+	/*for (int i = 0; cmd_array[i]; i++)
 	{
 		printf("---> Command %d <---\n\n", i);
 		printf(	"pipe: %d\n"
@@ -142,8 +154,10 @@ static int		process_input(t_shell *ms, char *input)
 		for (int j = 0; j < cmd_array[i]->argc; j++)
 			printf(" %s", cmd_array[i]->argv[j]);
 		printf("\n\n");
-	}
-	gb_clear();
+	}								Display all command informations*/
+	ret = executer(ms, cmd_array);
+	ft_destroy_array(tokens, token_cnt);
+	destroy_cmd_array(cmd_array);
 	return (0);
 }
 
@@ -170,8 +184,6 @@ int 			main(int argc, char **argv, char **envp)
 	t_shell		ms;
 
 	(void)argc;
-	if (gb_add(&ms, minishell_clear))
-		return (-1);
 	minishell_init(&ms, argv[0]);
 	if ((setup_signal() == SIG_ERR)
 	|| minishell_setup(&ms, envp))

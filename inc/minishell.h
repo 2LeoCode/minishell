@@ -100,7 +100,6 @@ typedef struct	s_input
 typedef struct	s_cmd
 {
 	bool		pipe;
-	bool		redirect_in;
 	bool		redirect_out;
 	bool		redirect_out2;
 	char		*in;
@@ -158,7 +157,6 @@ void	abort_handler(int);
 /*
 **	minishell_setup.c
 */
-void	minishell_clear(void *data);
 void	minishell_init(t_shell *, const char *);
 sig_t	setup_signal(void);
 int		minishell_setup(t_shell *, char **);
@@ -204,13 +202,11 @@ void	minishell_exit(int ret);
 **	parsing
 */
 char	**lexer(char *input_str);
-t_cmd	**parser(char **tokens);
+t_cmd	**parser(char **tokens, size_t token_cnt);
 
 /*
 **	minishell_clear.c
 */
-
-void	minishell_clear(void *data);
-void	lst_destroy_raw(void *data);
+void	minishell_clear(void);
 
 #endif

@@ -96,7 +96,7 @@ int     check_operator_excess(char *str)
    }
    return (0);
    }
- */
+*/
 
 int main(int argc, char **argv)
 {

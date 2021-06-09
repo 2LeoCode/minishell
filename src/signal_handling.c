@@ -26,13 +26,11 @@ void int_handler(int sig)
 
 /*
 **	A default abort-handler that will free the memory stored in our garbage
-**	(see garbage.h) before exiting. That may be useful if we want to send a
-**	SIGABRT if something goes wrong.
+**	(see garbage.h) before exiting. That may be useful if something goes wrong.
 */
 void abort_handler(int sig)
 {
 	(void)sig;
-	gb_load();
-	gb_clear();
+	minishell_clear();
 	exit(errno);
 }

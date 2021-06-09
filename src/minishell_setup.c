@@ -137,14 +137,15 @@ int			minishell_setup(t_shell *ms, char **envp)
 		g_global_data.env->data[i] = ft_strdup(envp[i]);
 		if (!g_global_data.env->data[i])
 		{
-			while (i--)
-				free(g_global_data.env->data[i]);
+			ft_destroy_array(g_global_data.env->data, NULL_ENDED);
 			free(g_global_data.env);
+			g_global_data.env = NULL;
 			return (-1);
 		}
 	}
-	ft_addenv("HISTFILE", ".ms_history");
-	g_global_data.history_path = ".ms_history";
+	g_global_data.history_path = ft_getenv("HISTFILE");
+	if (!g_global_data.history_path)
+		g_global_data.history_path = ".ms_history";
 	i = -1;
 	if (get_history() || setup_termcaps(&ms->tcaps) || setup_termios())
 		return (-1);

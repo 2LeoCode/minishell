@@ -45,13 +45,15 @@ void    ft_putecho(char **av, int ac, int *n_flag)
             ft_putstr(av[i]);
             i++;
         }   
-    }   
+    }  
     if (!*n_flag)
         ft_putchar_fd('\n', 1); 
 }
 
-int builtin_echo(int ac, char ** av, char ** ep)
+int builtin_echo(int ac, char **av, char **ep)
 {
+	int n_flag;
+
 	(void)ep;
 	if (ac == 1)
 	{   

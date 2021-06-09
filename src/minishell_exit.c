@@ -2,9 +2,8 @@
 
 void	minishell_exit(int ret)
 {
-	gb_load();
-	gb_clear();
 	save_history();
 	tcsetattr(0, 0, &g_global_data.term_backup);
+	minishell_clear();
 	exit(ret);
 }
