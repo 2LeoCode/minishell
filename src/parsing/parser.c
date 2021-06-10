@@ -137,6 +137,17 @@ int		replace_env_tokens(char **tokens)
 			ptr = ft_strchr(*tokens, '$');
 			while (ptr)
 			{
+				if (!ft_memcmp(ptr, "$?", 2))
+				{
+					env = ft_itoa(g_global_data.status);
+					if (!env || ft_srreplace_first(&ptr, "$?", env))
+					{
+						free(env);
+						return (-1);
+					}
+					ptr = ft_strchr(ptr + 1, "$");
+					continue ;
+				}
 				to_replace = ft_strndup(ptr, ft_wrdlen(ptr));
 				if (!to_replace)
 					return (-1);

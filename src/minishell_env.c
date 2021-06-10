@@ -12,14 +12,18 @@ int		ft_addenv(const char *name, const char *value)
 	int				i;
 
 	new_env = malloc(sizeof(struct s_env)
-		+ (g_global_data.env->count + 1) * sizeof(char *));
+		+ (g_global_data.env->count + 2) * sizeof(char *));
 	if (!new_env)
 		return (-1);
 	new_env->count = g_global_data.env->count + 1;
+	new_env->data[new_env->count] = NULL;
 	i = -1;
 	while (++i < g_global_data.env->count)
 		new_env->data[i] = g_global_data.env->data[i];
-	new_env->data[i] = ft_strcjoin(name, value, '=');
+	if (value)
+		new_env->data[i] = ft_strcjoin(name, value, '=');
+	else
+		new_env->data[i] = ft_strdup(name);
 	if (!new_env->data[i])
 	{
 		free(new_env);
@@ -39,10 +43,11 @@ int	ft_delenv(const char *name)
 	int				j;
 
 	new_env = malloc(sizeof(struct s_env)
-		+ (g_global_data.env->count - 1) * sizeof(char *));
+		+ g_global_data.env->count * sizeof(char *));
 	if (!new_env)
 		return (-1);
 	new_env->count = g_global_data.env->count - 1;
+	new_env->data[new_env->count] = NULL;
 	i = -1;
 	j = 0;
 	while (++i < g_global_data.env->count)
@@ -86,8 +91,13 @@ int	ft_setenv(const char *name, const char *value)
 				&& g_global_data.env->data[i][name_len] == '='
 				&& !ft_memcmp(g_global_data.env->data[i], name, name_len))
 		i++;
-	if (g_global_data.env->data[i])
-		ft_delenv(name);
+	if (value)
+	{
+		if (g_global_data.env->data[i])
+			ft_delenv(name);
+	}
+	else if (g_global_data.env->data[i])
+		return (0);
 	if (ft_addenv(name, value))
 		return (-1);
 	return (0);

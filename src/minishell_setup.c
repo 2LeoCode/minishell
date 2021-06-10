@@ -79,20 +79,20 @@ void		minishell_init(t_shell *ms, const char *executable_name)
 	ms->executable_name = (char *)executable_name;
 	g_global_data.history_path = NULL;
 	g_global_data.history = NULL;
-	ms->cmd_list[0] = "cd";
-	ms->cmd_list[1] = "echo";
-	ms->cmd_list[2] = "env";
-	ms->cmd_list[3] = "exit";
-	ms->cmd_list[4] = "export";
-	ms->cmd_list[5] = "pwd";
-	ms->cmd_list[6] = "unset";
-	ms->builtin_fct_list[0] = &builtin_cd;
-	ms->builtin_fct_list[1] = &builtin_echo;
-	ms->builtin_fct_list[2] = &builtin_env;
-	ms->builtin_fct_list[3] = &builtin_exit;
-	ms->builtin_fct_list[4] = &builtin_export;
-	ms->builtin_fct_list[5] = &builtin_pwd;
-	ms->builtin_fct_list[6] = &builtin_unset;
+	ms->builtin_fct_name[0] = "cd";
+	ms->builtin_fct_name[1] = "echo";
+	ms->builtin_fct_name[2] = "env";
+	ms->builtin_fct_name[3] = "exit";
+	ms->builtin_fct_name[4] = "export";
+	ms->builtin_fct_name[5] = "pwd";
+	ms->builtin_fct_name[6] = "unset";
+	ms->builtin_fct_ptr[0] = &builtin_cd;
+	ms->builtin_fct_ptr[1] = &builtin_echo;
+	ms->builtin_fct_ptr[2] = &builtin_env;
+	ms->builtin_fct_ptr[3] = &builtin_exit;
+	ms->builtin_fct_ptr[4] = &builtin_export;
+	ms->builtin_fct_ptr[5] = &builtin_pwd;
+	ms->builtin_fct_ptr[6] = &builtin_unset;
 }
 
 /*
@@ -126,6 +126,7 @@ int			minishell_setup(t_shell *ms, char **envp)
 		return (-1);
 	while (envp[count])
 		count++;
+	g_global_data.status = 0;
 	g_global_data.env = malloc(sizeof(struct s_env) + (count + 1)
 							* sizeof(char *));
 	if (!g_global_data.env)

@@ -36,7 +36,7 @@
 # include <libft.h>
 # include <list.h>
 
-# define CMD_COUNT 7
+# define BUILTIN_COUNT 7
 
 # ifndef CDIR_BUFFER_SIZE
 #  define CDIR_BUFFER_SIZE 32
@@ -60,8 +60,8 @@ extern struct	s_globaldata
 	struct termios	term_backup;
 	t_list			*history;
 	char			*history_path;
-	int				
-	struct	s_env
+	int				status;
+	struct s_env
 	{
 		int		count;
 		char	*data[];
@@ -104,7 +104,7 @@ typedef struct	s_cmd
 	bool		redirect_out2;
 	char		*in;
 	t_list		*out;
-	int 		argc;
+	int			argc;
 	char		*argv[];
 }	t_cmd;
 
@@ -126,10 +126,15 @@ typedef struct		s_shell
 {
 	t_term			tcaps;
 	char			*executable_name;
-	char			*cmd_list[CMD_COUNT];
-	t_builtin_fun	builtin_fct_list[CMD_COUNT];
+	char			*builtin_fct_name[BUILTIN_COUNT];
+	t_builtin_fun	builtin_fct_ptr[BUILTIN_COUNT];
 }	t_shell;
 
+typedef struct		s_fdio
+{
+	int	in;
+	int	out;
+}	t_fdio;
 /*
 **	built-ins
 */

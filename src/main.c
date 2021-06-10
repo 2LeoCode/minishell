@@ -158,9 +158,6 @@ static int		process_input(t_shell *ms, char *input)
 		printf("\n\n");
 	}								Display all command informations*/
 	ret = executer(ms, cmd_array);
-	if (errno == EAGAIN || errno == ENOMEM)
-		
-	// SET THE $? variable with ret
 	ft_destroy_array(tokens, token_cnt);
 	destroy_cmd_array(cmd_array);
 	return (ret);
