@@ -20,7 +20,6 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 	{
 		out_fd = 0;
 		in_fd = 0;
-		pipe(pipefd);
 		if ((*cmd_arr)->in)
 			in_fd = open((*cmd_arr)->in, O_RDONLY);
 		it = (*cmd_arr)->out->prev;
@@ -36,9 +35,15 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 				S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 		if (!(*cmd_arr)->pipe)
 		{
-			EXECUTE_COMMAND
+			
 		}
-		else PIPE/FORK EXECUTE
+		else
+		{
+			pipe(pipefd);
+			cpid = fork();
+			if (cpid == -1)
+				return (-1);
+		}
 	}
 	return (0);
 }

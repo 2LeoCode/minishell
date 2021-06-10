@@ -115,9 +115,11 @@ static int		process_input(t_shell *ms, char *input)
 	t_cmd	**cmd_array;
 	char	**tokens;
 	size_t	token_cnt;
+	bool	failure;
 	int		ret;
 
 	(void)ms;
+	failure = 0;
 	if (*input && ((!lst_size(g_global_data.history)
 				|| ft_strcmp(input, (char*)g_global_data.history->next->data))
 				&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1)))
@@ -156,25 +158,32 @@ static int		process_input(t_shell *ms, char *input)
 		printf("\n\n");
 	}								Display all command informations*/
 	ret = executer(ms, cmd_array);
+	if (errno == EAGAIN || errno == ENOMEM)
+		
+	// SET THE $? variable with ret
 	ft_destroy_array(tokens, token_cnt);
 	destroy_cmd_array(cmd_array);
-	return (0);
+	return (ret);
 }
 
 static void		prompt(t_shell *ms, char **input_ptr)
 {
-	int		read_ret;
+	int	read_ret;
+	int	cmd_ret;
 
 	read_ret = 1;
 	while (1)
 	{
 		write(1, "minishell-1.0$ ", 15);
-		if (((read_ret = get_input(ms, input_ptr)) == -1)
-					|| (read_ret && ((process_input(ms, *input_ptr) == -1))))
+		read_ret = get_input(ms, input_ptr);
+		if (read_ret != -1)
+			cmd_ret = process_input(ms, *input_ptr);
+		if (read_ret == -1 || cmd_ret == -1)
 		{
 			perror("minishell");
 			minishell_exit(-1);
 		}
+		free(*input_ptr);
 	}
 }
 

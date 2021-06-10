@@ -35,7 +35,6 @@
 # include <get_next_line.h>
 # include <libft.h>
 # include <list.h>
-# include <garbage.h>
 
 # define CMD_COUNT 7
 
@@ -61,6 +60,7 @@ extern struct	s_globaldata
 	struct termios	term_backup;
 	t_list			*history;
 	char			*history_path;
+	int				
 	struct	s_env
 	{
 		int		count;
