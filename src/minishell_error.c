@@ -15,7 +15,6 @@
 int minishell_error(void)
 {
 	perror("minishell");
-	minishell_clear();
 	return (-1);
 }
 

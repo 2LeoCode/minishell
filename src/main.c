@@ -117,7 +117,6 @@ static int		process_input(t_shell *ms, char *input)
 	size_t	token_cnt;
 	int		ret = 0;
 
-	
 	(void)ms;
 	if (*input && ((!lst_size(g_global_data.history)
 				|| ft_strcmp(input, (char*)g_global_data.history->next->data))
@@ -153,9 +152,12 @@ static int		process_input(t_shell *ms, char *input)
 			printf(" %s", cmd_array[i]->argv[j]);
 		printf("\n\n");
 	}								Display all command informations*/
-	//ret = executer(ms, cmd_array);
-	ft_destroy_array((void **)tokens, token_cnt);
-	destroy_cmd_array(cmd_array);
+	else
+	{
+		ret = executer(ms, cmd_array);
+		ft_destroy_array((void **)tokens, token_cnt);
+		destroy_cmd_array(cmd_array);
+	}
 	return (ret);
 }
 
