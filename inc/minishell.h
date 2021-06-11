@@ -36,6 +36,7 @@
 # include <get_next_line.h>
 # include <libft.h>
 # include <list.h>
+# include <stdio.h>
 
 # define BUILTIN_COUNT 7
 

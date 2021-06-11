@@ -48,7 +48,7 @@ LIB	 =		ft\
 OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 2, $(.SUFFIXES)))
 
 CC =		gcc
-CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror #-fsanitize=address -g3
+CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror -fsanitize=address -g3
 LCFLAGS =	$(addprefix -L, $(LIBDIR)) lib/libft.a lib/liblist.a lib/libgnl.a $(addprefix -l, $(LIB))
 
 ifeq ($(OS), Darwin)

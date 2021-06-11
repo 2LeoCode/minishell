@@ -26,17 +26,8 @@ void	destroy_cmd_array(t_cmd **cmd_arr)
 	free(cmd_arr);
 }
 
-static void		*parser_failure(char **tokens, size_t token_cnt, t_cmd **cmd_arr)
+static void		*parser_failure(char **tokens, size_t token_cnt)
 {
-	t_cmd	**it;
-	
-	it = cmd_arr - 1;
-	while (*++it)
-	{
-		lst_destroy((*it)->out);
-		free((*it)->in);
-		free(*it);
-	}
 	ft_destroy_array((void **)tokens, token_cnt);
 	return (NULL);
 }
@@ -119,7 +110,6 @@ static char	**parse_command(char **tokens, t_cmd *current_cmd)
 	j = 0;
 	while (*tokens && **tokens != '|' && **tokens != ';')
 	{
-		printf("%s\n", *tokens);
 		tmp = parse_token(tokens, current_cmd, &j);
 		if (!tmp)
 			return (NULL);
@@ -199,12 +189,12 @@ t_cmd	**parser(char **tokens, size_t token_cnt)
 		cmd_arr[i] = malloc(sizeof(t_cmd) + (ac + 1) * sizeof(char *));
 		cmd_arr[i]->argv[ac] = NULL;
 		if (!cmd_arr[i] || lst_init(&cmd_arr[i]->out))
-			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
+			return (parser_failure(begin_tokens, token_cnt));
 		cmd_arr[i]->in = NULL;
 		cmd_arr[i]->argc = ac;
 		tmp = parse_command(tokens, cmd_arr[i]);
 		if (!tmp)
-			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
+			return (parser_failure(begin_tokens, token_cnt));
 		tokens = tmp;
 	}
 	return (cmd_arr);

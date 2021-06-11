@@ -247,9 +247,6 @@ static int		process_input(t_shell *ms, char *input)
 	gb_save();
 	cmd_array = NULL;
 	tokens = lexer(input);
-	for (int i = 0; tokens[i]; i++)
-		printf("%s\n", tokens[i]);
-	printf("OK1\n");
 	if (tokens)
 		cmd_array = parser(tokens);
 	if (!tokens || !cmd_array)

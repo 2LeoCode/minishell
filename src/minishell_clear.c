@@ -17,8 +17,6 @@
 */
 void	minishell_clear(void)
 {
-	for (t_list *it = g_global_data.history->next; it != g_global_data.history; it = it->next)
-		printf("%s\n", it->data);
 	lst_destroy(g_global_data.history);
 	ft_clearenv();
 }
