@@ -30,11 +30,31 @@ char	**strarr_dup(char **src, size_t size)
 	return (arr);
 }
 
+int		retrieve_env(char **backup)
+{
+	size_t i;
+
+	i = 0;
+	while (backup[i])
+		i++;
+	g_global_data.env = malloc(sizeof(struct s_env) + (i + 1) * sizeof(char *));
+	if (!g_global_data.env)
+		return (-1);
+	g_global_data.env->count = i;
+	i = 0;
+	while (backup[i])
+		g_global_data.env->data[i] = backup[i++];
+	g_global_data.env->data[i] = NULL;
+	free(backup);
+	return (0);
+}
+
 int		env_failure(char **backup, char **path, int ret)
 {
 	ft_destroy_array(path, NULL_ENDED);
 	ft_clearenv();
-	g_global_data.env->data = backup;
+	if (retrieve_env(backup) == -1)
+		env_failure(backup, NULL, -1);
 	printf("syntax error");
 	return (ret);
 }
@@ -91,25 +111,6 @@ int		handle_env_outcome(char **av, char **ep, char **backup, char **path)
 		}
 	}
 	free(full_path);
-}
-
-int		retrieve_env(char **backup)
-{
-	size_t i;
-
-	i = 0;
-	while (backup[i])
-		i++;
-	g_global_data.env = malloc(sizeof(struct s_env) + (i + 1) * sizeof(char *));
-	if (!g_global_data.env)
-		return (-1);
-	g_global_data.env->count = i;
-	i = 0;
-	while (backup[i])
-		g_global_data.env->data[i] = backup[i++];
-	g_global_data.env->data[i] = NULL;
-	free(backup);
-	return (0);
 }
 
 int		builtin_env(int ac, char **av, char **ep)
