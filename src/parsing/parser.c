@@ -16,13 +16,12 @@ void	destroy_cmd_array(t_cmd **cmd_arr)
 {
 	t_cmd	**it;
 
-	it = cmd_arr;
-	while (*it)
+	it = cmd_arr - 1;
+	while (*++it)
 	{
 		lst_destroy((*it)->out);
 		free((*it)->in);
 		free(*it);
-		it++;
 	}
 	free(cmd_arr);
 }
@@ -32,6 +31,12 @@ static void		*parser_failure(char **tokens, size_t token_cnt, t_cmd **cmd_arr)
 	t_cmd	**it;
 	
 	it = cmd_arr - 1;
+	while (*++it)
+	{
+		lst_destroy((*it)->out);
+		free((*it)->in);
+		free(*it);
+	}
 	ft_destroy_array((void **)tokens, token_cnt);
 	return (NULL);
 }
@@ -129,13 +134,11 @@ static char	**parse_command(char **tokens, t_cmd *current_cmd)
 
 int		replace_env_tokens(char **tokens)
 {
-	char	**begin;
 	char	*env;
 	char	*ptr;
 	char	*to_replace;
 	bool	failure;
 
-	begin = tokens;
 	failure = false;
 	while (*tokens)
 	{

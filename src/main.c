@@ -115,11 +115,10 @@ static int		process_input(t_shell *ms, char *input)
 	t_cmd	**cmd_array;
 	char	**tokens;
 	size_t	token_cnt;
-	bool	failure;
 	int		ret = 0;
 
+	
 	(void)ms;
-	failure = 0;
 	if (*input && ((!lst_size(g_global_data.history)
 				|| ft_strcmp(input, (char*)g_global_data.history->next->data))
 				&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1)))

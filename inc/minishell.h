@@ -24,6 +24,7 @@
 # include <termios.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/wait.h>
 # include <sys/ioctl.h>
 # include <limits.h>
 # include <stdbool.h>
