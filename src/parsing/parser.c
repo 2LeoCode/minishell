@@ -16,10 +16,13 @@ void	destroy_cmd_array(t_cmd **cmd_arr)
 {
 	t_cmd	**it;
 
-	while (*++it)
+	it = cmd_arr;
+	while (*it)
 	{
 		lst_destroy((*it)->out);
+		free((*it)->in);
 		free(*it);
+		it++;
 	}
 	free(cmd_arr);
 }
@@ -140,12 +143,13 @@ int		replace_env_tokens(char **tokens)
 				if (!ft_memcmp(ptr, "$?", 2))
 				{
 					env = ft_itoa(g_global_data.status);
-					if (!env || ft_srreplace_first(&ptr, "$?", env))
+					if (!env || ft_strreplace_first(&ptr, "$?", env, NULL))
 					{
 						free(env);
 						return (-1);
 					}
-					ptr = ft_strchr(ptr + 1, "$");
+					free(env);
+					ptr = ft_strchr(ptr + 1, '$');
 					continue ;
 				}
 				to_replace = ft_strndup(ptr, ft_wrdlen(ptr));
@@ -183,7 +187,8 @@ t_cmd	**parser(char **tokens, size_t token_cnt)
 	while (++i < count)
 	{
 		ac = arg_count(tokens);
-		cmd_arr[i] = malloc(sizeof(t_cmd) + ac * sizeof(char *));
+		cmd_arr[i] = malloc(sizeof(t_cmd) + (ac + 1) * sizeof(char *));
+		cmd_arr[i]->argv[ac] = NULL;
 		if (!cmd_arr[i] || lst_init(&cmd_arr[i]->out))
 			return (parser_failure(tokens, token_cnt, cmd_arr));
 		cmd_arr[i]->in = NULL;

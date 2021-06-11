@@ -9,15 +9,9 @@ INCDIR =	inc
 LIBDIR =	lib
 OBJDIR =	.obj
 
+
+
 SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
-			$(addprefix builtins/builtin_,\
-			cd\
-			echo\
-			env\
-			exit\
-			export\
-			pwd\
-			unset)\
 			$(addprefix key_processing/key_process_,\
 			0\
 			1)\
@@ -31,24 +25,31 @@ SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
 			setup)\
 			$(addprefix parsing/,\
 			lexer\
-			parser)\
+			parser\
+			executer)\
+			$(addprefix builtins/builtin_,\
+			cd\
+			echo\
+			env\
+			exit\
+			export\
+			pwd\
+			unset)\
 			signal_handling)
 INC =		$(addsuffix $(word 3, $(.SUFFIXES)),\
 			libft\
 			get_next_line\
 			list\
-			garbage\
 			minishell)
 LIB	 =		ft\
             list\
             gnl\
-            gb\
             ncurses
 OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 2, $(.SUFFIXES)))
 
 CC =		gcc
 CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror #-fsanitize=address -g3
-LCFLAGS =	$(addprefix -L, $(LIBDIR)) lib/libft.a lib/liblist.a lib/libgb.a lib/libgnl.a $(addprefix -l, $(LIB))
+LCFLAGS =	$(addprefix -L, $(LIBDIR)) lib/libft.a lib/liblist.a lib/libgnl.a $(addprefix -l, $(LIB))
 
 ifeq ($(OS), Darwin)
 ####  COLORS MAC  ####
@@ -95,10 +96,8 @@ libraries:
 	$(MAKE) -C $(LIBDIR)/libft_ultimate
 	@printf "$(KCYN)➤ "
 	$(MAKE) -C $(LIBDIR)/liblist_ultimate
-	@printf "$(KCYN)➤ "
-	$(MAKE) -C $(LIBDIR)/libgb
 	@printf "$(KYEL)➤ "
-	cp $(LIBDIR)/get_next_line_ultimate/libgnl.a $(LIBDIR)/libft_ultimate/libft.a $(LIBDIR)/liblist_ultimate/liblist.a $(LIBDIR)/libgb/libgb.a $(LIBDIR)/
+	cp $(LIBDIR)/get_next_line_ultimate/libgnl.a $(LIBDIR)/libft_ultimate/libft.a $(LIBDIR)/liblist_ultimate/liblist.a $(LIBDIR)/
 	@printf "$(KNRM)"
 
 $(OBJDIR)/%$(word 2, $(.SUFFIXES)): $(SRCDIR)/%$(word 1, $(.SUFFIXES)) $(addprefix $(INCDIR)/, $(INC))
@@ -117,8 +116,6 @@ clean:
 	$(MAKE) fclean -C $(LIBDIR)/libft_ultimate
 	@printf "$(KRED)➤ "
 	$(MAKE) fclean -C $(LIBDIR)/liblist_ultimate
-	@printf "$(KRED)➤ "
-	$(MAKE) fclean -C $(LIBDIR)/libgb
 
 fclean: clean
 	@printf "$(KRED)➤ "

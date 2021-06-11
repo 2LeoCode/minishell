@@ -8,7 +8,7 @@ void	create_file(const char *path)
 	close(fd);
 }
 
-t_builtin_fun	search_builtin(t_shell *ms, char *name)
+/*t_builtin_fun	search_builtin(t_shell *ms, char *name)
 {
 	const size_t	name_len = ft_strlen(name);
 	unsigned int	i;
@@ -19,7 +19,7 @@ t_builtin_fun	search_builtin(t_shell *ms, char *name)
 	if (i == BUILTIN_COUNT)
 		return (NULL);
 	return (ms->builtin_fct_ptr[i]);
-}
+}*/
 
 char	*get_first_path(char *executable_name, char **path)
 {
@@ -33,6 +33,7 @@ char	*get_first_path(char *executable_name, char **path)
 		if (fd_test != -1)
 			return (full_path);
 		free(full_path);
+		path++;
 	}
 	return (NULL);
 }
@@ -44,7 +45,7 @@ pid_t	execute_cmd(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, char **path)
 	char			*full_path;
 
 	cpid = 0;
-	builtin_fun = search_builtin(ms, *current_cmd->argv);
+	builtin_fun = NULL;(void)ms;//search_builtin(ms, *current_cmd->argv);
 	if (fdio.in != -1)
 		dup2(fdio.in, 0);
 	if (fdio.out != -1)
@@ -83,7 +84,7 @@ pid_t	execute_cmd_pipe(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, char **path
 	cpid = fork();
 	if (cpid == -1)
 	{
-		ft_destroy_array(path, NULL_ENDED);
+		ft_destroy_array((void **)path, NULL_ENDED);
 		return (-1);
 	}
 	if (!cpid)
@@ -95,7 +96,7 @@ pid_t	execute_cmd_pipe(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, char **path
 			dup2(pipefd[1], 1);
 		if (fdio.in != -1)
 			dup2(fdio.in, 0);
-		builtin_fun = search_builtin(ms, *current_cmd->argv);
+		builtin_fun = NULL;(void)ms;//search_builtin(ms, *current_cmd->argv);
 		if (builtin_fun)
 		{
 			g_global_data.status = (*builtin_fun)(current_cmd->argc, current_cmd->argv, g_global_data.env->data);
@@ -114,7 +115,7 @@ bool	check_error(pid_t *pid_value, char *executable_name, char **path)
 {
 	if (errno == ENOMEM)
 	{
-		ft_destroy_array(path, NULL_ENDED);
+		ft_destroy_array((void **)path, NULL_ENDED);
 		return (true);
 	}
 	if (*pid_value == -1)
@@ -122,15 +123,17 @@ bool	check_error(pid_t *pid_value, char *executable_name, char **path)
 		g_global_data.status = command_error(executable_name);
 		*pid_value = 0;
 	}
+	return (false);
 }
 
 int	executer(t_shell *ms, t_cmd **cmd_arr)
 {
-	const char	**path = ft_split(ft_getenv("PATH"), ':');
+	char		**path;
 	pid_t		cpid;
 	t_fdio		fdio;
 	t_list		*it;
 
+	path = ft_split(ft_getenv("PATH"), ':');
 	if (!path)
 		return (-1);
 	cpid = 0;
@@ -142,7 +145,10 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 			fdio.in = open((*cmd_arr)->in, O_RDONLY);
 		it = (*cmd_arr)->out->prev;
 		while (it->prev != (*cmd_arr)->out)
+		{
 			create_file(it->data);
+			it = it->prev;
+		}
 		if ((*cmd_arr)->redirect_out)
 			fdio.out = open((*cmd_arr)->out->next->data,
 				O_CREAT | O_WRONLY | O_TRUNC,
@@ -159,13 +165,13 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 		if (!(*cmd_arr)->pipe)
 			cpid = execute_cmd(ms, *cmd_arr, fdio, path);
 		else
-			cpid = execute_cmd_pipe(ms, *cmd_arr, fdio, &g_global_data.status);
+			cpid = execute_cmd_pipe(ms, *cmd_arr, fdio, path);
 		if (check_error(&cpid, *(*cmd_arr)->argv, path))
 			return (-1);
 		cmd_arr++;
 	}
 	if (cpid)
 		waitpid(cpid, &g_global_data.status, 0);
-	ft_destroy_array(path, NULL_ENDED);
+	ft_destroy_array((void **)path, NULL_ENDED);
 	return (0);
 }

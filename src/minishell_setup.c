@@ -138,8 +138,7 @@ int			minishell_setup(t_shell *ms, char **envp)
 		g_global_data.env->data[i] = ft_strdup(envp[i]);
 		if (!g_global_data.env->data[i])
 		{
-			ft_destroy_array(g_global_data.env->data, NULL_ENDED);
-			free(g_global_data.env);
+			ft_clearenv();
 			g_global_data.env = NULL;
 			return (-1);
 		}

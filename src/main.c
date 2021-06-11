@@ -95,7 +95,7 @@ static int		get_input(t_shell *ms, char **final_input)
 	return (ret);
 }
 
-size_t	token_count(const char **tokens)
+size_t	token_count(char **tokens)
 {
 	size_t	count;
 
@@ -116,7 +116,7 @@ static int		process_input(t_shell *ms, char *input)
 	char	**tokens;
 	size_t	token_cnt;
 	bool	failure;
-	int		ret;
+	int		ret = 0;
 
 	(void)ms;
 	failure = 0;
@@ -131,7 +131,7 @@ static int		process_input(t_shell *ms, char *input)
 		cmd_array = parser(tokens, token_cnt);
 	if (!tokens || !cmd_array)
 	{
-		ft_destroy_array(tokens, token_cnt);
+		ft_destroy_array((void **)tokens, token_cnt);
 		minishell_error();
 	}
 	/*for (int i = 0; cmd_array[i]; i++)
@@ -157,8 +157,8 @@ static int		process_input(t_shell *ms, char *input)
 			printf(" %s", cmd_array[i]->argv[j]);
 		printf("\n\n");
 	}								Display all command informations*/
-	ret = executer(ms, cmd_array);
-	ft_destroy_array(tokens, token_cnt);
+	//ret = executer(ms, cmd_array);
+	ft_destroy_array((void **)tokens, token_cnt);
 	destroy_cmd_array(cmd_array);
 	return (ret);
 }

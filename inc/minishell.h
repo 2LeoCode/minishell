@@ -206,8 +206,10 @@ void	minishell_exit(int ret);
 /*
 **	parsing
 */
+void	destroy_cmd_array(t_cmd **cmd_arr);
 char	**lexer(char *input_str);
 t_cmd	**parser(char **tokens, size_t token_cnt);
+int		executer(t_shell *ms, t_cmd **cmd_arr);
 
 /*
 **	minishell_clear.c
