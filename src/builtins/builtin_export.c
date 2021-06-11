@@ -12,7 +12,7 @@
 
 #include <minishell.h>
 
-void	ft_printexp(char **ep)
+/*void	ft_printexp(char **ep)
 {
 	while (*ep)
 	{
@@ -43,11 +43,13 @@ int		export_failure(int error)
 {
 	printf("syntax error");
 	return (error);
-}
+}*/
 
 int		builtin_export(int ac, char ** av, char ** ep)
 {
-	char	*rpl;
+	(void)ep, (void)ac, (void)av;
+	return (0);
+	/*char	*rpl;
 	int		ret;
 
 	while (*av)
@@ -65,5 +67,5 @@ int		builtin_export(int ac, char ** av, char ** ep)
 	}
 	if (ac == 1)
 		ft_printexp(ep);
-	return (0);
+	return (0);*/
 }

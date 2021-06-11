@@ -99,7 +99,10 @@ static char	**parse_token(char **token, t_cmd *current_cmd, unsigned int *index)
 			return (NULL);
 	}
 	else
+	{
 		current_cmd->argv[(*index)++] = *token;
+		*token = NULL;
+	}
 	return (token);
 }
 
@@ -111,6 +114,7 @@ static char	**parse_command(char **tokens, t_cmd *current_cmd)
 	j = 0;
 	while (*tokens && **tokens != '|' && **tokens != ';')
 	{
+		printf("%s\n", *tokens);
 		tmp = parse_token(tokens, current_cmd, &j);
 		if (!tmp)
 			return (NULL);
@@ -174,11 +178,13 @@ int		replace_env_tokens(char **tokens)
 t_cmd	**parser(char **tokens, size_t token_cnt)
 {
 	const size_t	count = cmd_count(tokens);
+	char			**begin_tokens;
 	int				ac;
 	t_cmd			**cmd_arr;
 	char			**tmp;
 	size_t			i;
 
+	begin_tokens = tokens;
 	cmd_arr = malloc(sizeof(t_cmd *) * (count + 1));
 	if (!cmd_arr || replace_env_tokens(tokens))
 		return (NULL);
@@ -190,12 +196,12 @@ t_cmd	**parser(char **tokens, size_t token_cnt)
 		cmd_arr[i] = malloc(sizeof(t_cmd) + (ac + 1) * sizeof(char *));
 		cmd_arr[i]->argv[ac] = NULL;
 		if (!cmd_arr[i] || lst_init(&cmd_arr[i]->out))
-			return (parser_failure(tokens, token_cnt, cmd_arr));
+			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
 		cmd_arr[i]->in = NULL;
 		cmd_arr[i]->argc = ac;
 		tmp = parse_command(tokens, cmd_arr[i]);
 		if (!tmp)
-			return (parser_failure(tokens, token_cnt, cmd_arr));
+			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
 		tokens = tmp;
 	}
 	return (cmd_arr);

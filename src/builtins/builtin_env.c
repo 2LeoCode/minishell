@@ -12,7 +12,7 @@
 
 #include <minishell.h>
 
-char	**strarr_dup(char **src, size_t size)
+/*char	**strarr_dup(char **src, size_t size)
 {
 	char	**arr;
 	size_t		i;
@@ -111,11 +111,13 @@ int		handle_env_outcome(char **av, char **ep, char **backup, char **path)
 		}
 	}
 	free(full_path);
-}
+}*/
 
 int		builtin_env(int ac, char **av, char **ep)
 {
-	char	**path;
+	(void)ep, (void)ac, (void)av;
+	return (0);
+	/*char	**path;
 	char	**backup;
 	int		i;
 	int		ret;
@@ -139,5 +141,5 @@ int		builtin_env(int ac, char **av, char **ep)
 	ft_clearenv();
 	if (retrieve_env(backup) == -1)
 		env_failure(backup, NULL, -1);
-	return (0);
+	return (0);*/
 }

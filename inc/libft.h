@@ -4,6 +4,7 @@
 # include <stdlib.h>
 # include <limits.h>
 # include <unistd.h>
+# include <stdio.h>
 
 # ifndef __WORDSIZE
 #  error __WORDSIZE is not defined

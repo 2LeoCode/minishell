@@ -130,10 +130,7 @@ static int		process_input(t_shell *ms, char *input)
 	if (tokens)
 		cmd_array = parser(tokens, token_cnt);
 	if (!tokens || !cmd_array)
-	{
-		ft_destroy_array((void **)tokens, token_cnt);
 		minishell_error();
-	}
 	/*for (int i = 0; cmd_array[i]; i++)
 	{
 		printf("---> Command %d <---\n\n", i);

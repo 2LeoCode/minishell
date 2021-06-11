@@ -12,7 +12,7 @@
 
 #include <minishell.h>
 
-int     is_valid_nflag(char *str)
+/*int     is_valid_nflag(char *str)
 {
     int i;
 
@@ -48,11 +48,13 @@ void    ft_putecho(char **av, int ac, int *n_flag)
     }  
     if (!*n_flag)
         ft_putchar_fd('\n', 1); 
-}
+}*/
 
 int builtin_echo(int ac, char **av, char **ep)
 {
-	int n_flag;
+	(void)ep, (void)ac, (void)av;
+	return (0);
+	/*int n_flag;
 
 	(void)ep;
 	if (ac == 1)
@@ -61,5 +63,5 @@ int builtin_echo(int ac, char **av, char **ep)
 		return (0);
 	}   
 	ft_putecho(av, ac, &n_flag);
-	return (0);
+	return (0);*/
 }

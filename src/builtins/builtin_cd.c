@@ -14,8 +14,9 @@
 
 int		builtin_cd(int ac, char **av, char **ep)
 {
-	(void)ep;
-	if (ac == 1 || strcmp(av[1], "~") != 0)
+	(void)ep, (void)ac, (void)av;
+	return (0);
+	/*if (ac == 1 || strcmp(av[1], "~") != 0)
 	{
 		if (!chdir(ft_getenv("HOME")));
 			return (0);
@@ -29,5 +30,5 @@ int		builtin_cd(int ac, char **av, char **ep)
 			printf("%s : not a valid directory\n", av[1]);
 			return (-1);
 		}
-	}
+	}*/
 }
