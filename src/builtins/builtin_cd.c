@@ -12,11 +12,16 @@
 
 #include <minishell.h>
 
-int builtin_cd(int ac, char ** av, char ** ep)
+int		builtin_cd(int ac, char **av, char **ep)
 {
+
+
 	(void)ac;
 	(void)av;
 	(void)ep;
-	
+//	"cd" est equivalent a "cd $HOME" ou "cd ~"
+//	checker nombre d'arguments
+	if (ac == 1)
+		
 	return (0);
 }
