@@ -36,15 +36,16 @@ char	*get_first_path(char *executable_name)
 {
 	int		fd_test;
 	char	*full_path;
+	const char	**it = (const char **)g_global_data.path;
 
-	while (*g_global_data.path)
+	while (*it)
 	{
-		full_path = ft_strcjoin(*g_global_data.path, executable_name, '/');
+		full_path = ft_strcjoin(*it, executable_name, '/');
 		fd_test = open(full_path, O_RDONLY);
 		if (fd_test != -1)
 			return (full_path);
 		free(full_path);
-		g_global_data.path++;
+		it++;
 	}
 	return (NULL);
 }
