@@ -18,5 +18,6 @@
 void	minishell_clear(void)
 {
 	lst_destroy(g_global_data.history);
+	ft_destroy_array((void **)g_global_data.path, NULL_ENDED);
 	ft_clearenv();
 }

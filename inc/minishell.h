@@ -15,6 +15,7 @@
 
 # include <unistd.h>
 # include <stdio.h>
+# include <string.h>
 # include <stdlib.h>
 # include <errno.h>
 # include <signal.h>
@@ -51,6 +52,7 @@
 # define _KEY_ESC 27
 # define _KEY_ENTER 10
 # define _KEY_DELETE 127
+# define _KEY_TAB 9
 
 /*
 **	Global struct containing the environment variables and a boolean used for
@@ -62,6 +64,8 @@ extern struct	s_globaldata
 	struct termios	term_backup;
 	t_list			*history;
 	char			*history_path;
+	char			**path;
+	bool			is_path_set;
 	int				status;
 	struct s_env
 	{
@@ -97,7 +101,7 @@ typedef struct	s_input
 
 
 /*
-**	WORK IN PROGRESS (Parsing)
+**	NO MORE WORK IN PROGRESS (Parsing)
 */
 typedef struct	s_cmd
 {
@@ -134,9 +138,18 @@ typedef struct		s_shell
 
 typedef struct		s_fdio
 {
-	int	in;
-	int	out;
+	int		in;
+	int		out;
+	bool	pipe;
 }	t_fdio;
+
+typedef struct		s_executor
+{
+	char			*full_path;
+	t_fdio			fdio;
+	int				pipefd[2];
+}					t_executor;
+
 /*
 **	built-ins
 */
@@ -209,7 +222,7 @@ void	minishell_exit(int ret);
 **	parsing
 */
 void	destroy_cmd_array(t_cmd **cmd_arr);
-char	**lexer(char *input_str);
+char	**lexer(char *input_str, size_t *token_count);
 t_cmd	**parser(char **tokens, size_t token_cnt);
 int		executer(t_shell *ms, t_cmd **cmd_arr);
 

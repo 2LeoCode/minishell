@@ -31,11 +31,11 @@ static int		process_key(t_shell *ms, t_input *input, int key)
 		g_global_data.sigint = false;
 		reset_input(input, NULL);
 	}
-	if (key == -1)
-		return (-1);
+	if (key == _KEY_TAB)
+		return (0);
 	if (key == _KEY_ENTER)
 		return (1);
-	if (ft_isprint(key) && process_key_print(input, key))
+	if (key == -1 || (ft_isprint(key) && process_key_print(input, key)))
 		return (-1);
 	else if (key == _KEY_DELETE)
 	{
@@ -109,7 +109,32 @@ size_t	token_count(char **tokens)
 **	The parse-and-execute part: we send an input to this function through a
 **	string, then we add this input to the command history, then we parse and
 **	execute the command.
+**
+**	for (int i = 0; cmd_array[i]; i++)
+**	{
+**		printf("---> Command %d <---\n\n", i);
+**		printf(	"pipe: %d\n"
+**				"r_in: %d\n"
+**				"r_out: %d\n"
+**				"r_out2: %d\n"
+**				"in: %s\n"
+**				"out:",
+**				cmd_array[i]->pipe,
+**				cmd_array[i]->redirect_in,
+**				cmd_array[i]->redirect_out,
+**				cmd_array[i]->redirect_out2,
+**				cmd_array[i]->in);
+**		for (t_list *it = cmd_array[i]->out->next; it != cmd_array[i]->out; it = it->next)
+**			printf(" %s", it->data);
+**		printf(	"\nargc: %d\n"
+**				"argv:",
+**				cmd_array[i]->argc);
+**		for (int j = 0; j < cmd_array[i]->argc; j++)
+**			printf(" %s", cmd_array[i]->argv[j]);
+**		printf("\n\n");
+**	}								Display all command informations
 */
+
 static int		process_input(t_shell *ms, char *input)
 {
 	t_cmd	**cmd_array;
@@ -123,35 +148,11 @@ static int		process_input(t_shell *ms, char *input)
 				&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1)))
 		return (-1);
 	cmd_array = NULL;
-	tokens = lexer(input);
-	token_cnt = token_count(tokens);
+	tokens = lexer(input, &token_cnt);
 	if (tokens)
 		cmd_array = parser(tokens, token_cnt);
 	if (!tokens || !cmd_array)
 		minishell_error();
-	/*for (int i = 0; cmd_array[i]; i++)
-	{
-		printf("---> Command %d <---\n\n", i);
-		printf(	"pipe: %d\n"
-				"r_in: %d\n"
-				"r_out: %d\n"
-				"r_out2: %d\n"
-				"in: %s\n"
-				"out:",
-				cmd_array[i]->pipe,
-				cmd_array[i]->redirect_in,
-				cmd_array[i]->redirect_out,
-				cmd_array[i]->redirect_out2,
-				cmd_array[i]->in);
-		for (t_list *it = cmd_array[i]->out->next; it != cmd_array[i]->out; it = it->next)
-			printf(" %s", it->data);
-		printf(	"\nargc: %d\n"
-				"argv:",
-				cmd_array[i]->argc);
-		for (int j = 0; j < cmd_array[i]->argc; j++)
-			printf(" %s", cmd_array[i]->argv[j]);
-		printf("\n\n");
-	}								Display all command informations*/
 	else
 	{
 		ret = executer(ms, cmd_array);

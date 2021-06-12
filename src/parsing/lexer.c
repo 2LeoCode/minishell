@@ -234,13 +234,12 @@ char	**tkntab_alloc(char *str, size_t cnt)
 }
 
 
-char **lexer(char *input_str)
+char	**lexer(char *input_str, size_t *token_count)
 {
-	const size_t	cnt = token_cnt(input_str);
-
-//	if (check_syntax(str))
-//		return (NULL);
-	return (tkntab_alloc(input_str, cnt));
+	*token_count = token_cnt(input_str);
+	if (check_syntax(input_str))
+		return (NULL);
+	return (tkntab_alloc(input_str, *token_count));
 }
 
 /*
