@@ -82,8 +82,7 @@ static char	**parse_token(char **token, t_cmd *current_cmd, unsigned int *index)
 		current_cmd->redirect_out2 = (*token)[1];
 		free(*token);
 		*token++ = NULL;
-		if (!is_valid_file(*token)
-					|| lst_push_front(current_cmd->out, *token, ft_strlen(*token) + 1))
+		if (lst_push_front(current_cmd->out, *token, ft_strlen(*token) + 1))
 			return (NULL);
 		free(*token);
 		*token = NULL;

@@ -1,6 +1,6 @@
 #include <minishell.h>
 
-void	create_file(const char *path)
+int	create_file(const char *path)
 {
 	int	fd;
 
@@ -65,7 +65,12 @@ pid_t	execute_cmd(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, char **path)
 			execve(full_path, current_cmd->argv, g_global_data.env->data);
 			perror("minishell");
 		}
+		free(full_path);
 	}
+	if (fdio.in != -1)
+		close(fdio.in);
+	if (fdio.out != -1)
+		close(fdio.out);
 	return (cpid);
 }
 
@@ -106,6 +111,10 @@ pid_t	execute_cmd_pipe(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, char **path
 		perror("minishell");
 	}
 	close(pipefd[1]);
+	if (fdio.in != -1)
+		close(fdio.in);
+	if (fdio.out != -1)
+		close(fdio.out);
 	dup2(pipefd[0], 0);
 	free(full_path);
 	return (cpid);
@@ -132,6 +141,7 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 	pid_t		cpid;
 	t_fdio		fdio;
 	t_list		*it;
+	const int	stdfd[2] = {dup(0), dup(1)};
 
 	path = ft_split(ft_getenv("PATH"), ':');
 	if (!path)
@@ -163,9 +173,16 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 			cpid = 0;
 		}
 		if (!(*cmd_arr)->pipe)
+		{
 			cpid = execute_cmd(ms, *cmd_arr, fdio, path);
+			dup2(stdfd[0], 0);
+			dup2(stdfd[1], 1);
+		}
 		else
+		{
 			cpid = execute_cmd_pipe(ms, *cmd_arr, fdio, path);
+			dup2(stdfd[1], 1);
+		}
 		if (check_error(&cpid, *(*cmd_arr)->argv, path))
 			return (-1);
 		cmd_arr++;
