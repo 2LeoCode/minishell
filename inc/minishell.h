@@ -41,10 +41,6 @@
 
 # define BUILTIN_COUNT 7
 
-# ifndef CDIR_BUFFER_SIZE
-#  define CDIR_BUFFER_SIZE 32
-# endif
-
 # define _KEY_UP 4283163
 # define _KEY_DOWN 4348699
 # define _KEY_LEFT 4479771
@@ -230,5 +226,7 @@ int		executer(t_shell *ms, t_cmd **cmd_arr);
 **	minishell_clear.c
 */
 void	minishell_clear(void);
+
+char	*get_first_path(char *executable_name);
 
 #endif

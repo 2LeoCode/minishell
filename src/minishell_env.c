@@ -42,6 +42,8 @@ int	ft_delenv(const char *name)
 	int				i;
 	int				j;
 
+	if (!ft_getenv("NAME"))
+		return (0);
 	new_env = malloc(sizeof(struct s_env)
 		+ g_global_data.env->count * sizeof(char *));
 	if (!new_env)

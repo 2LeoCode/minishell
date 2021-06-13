@@ -4,7 +4,6 @@
 # include <stdlib.h>
 # include <limits.h>
 # include <unistd.h>
-# include <stdio.h>
 
 # ifndef __WORDSIZE
 #  error __WORDSIZE is not defined
@@ -79,6 +78,7 @@ int					ft_putnbr(int nb);
 int					ft_putnbr_fd(int nb, int fd);
 int					ft_putstr(const char *s);
 int					ft_putstr_fd(const char *s, int fd);
+char				*ft_rplchr(char *s, int before, int after);
 char				**ft_split(const char *s, int c);
 char				*ft_stpcpy(char *dst, const char *src);
 char				*ft_stpncpy(char *dst, const char *src, size_t n);

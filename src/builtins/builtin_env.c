@@ -12,7 +12,7 @@
 
 #include <minishell.h>
 
-/*char	**strarr_dup(char **src, size_t size)
+char	**strarr_dup(char **src, size_t size)
 {
 	char	**arr;
 	size_t		i;
@@ -41,36 +41,37 @@ int		retrieve_env(char **backup)
 	if (!g_global_data.env)
 		return (-1);
 	g_global_data.env->count = i;
-	i = 0;
-	while (backup[i])
-		g_global_data.env->data[i] = backup[i++];
+	i = -1;
+	while (backup[++i])
+		g_global_data.env->data[i] = backup[i];
 	g_global_data.env->data[i] = NULL;
 	free(backup);
 	return (0);
 }
 
-int		env_failure(char **backup, char **path, int ret)
+int		env_failure(char **backup, int ret)
 {
-	ft_destroy_array(path, NULL_ENDED);
 	ft_clearenv();
 	if (retrieve_env(backup) == -1)
-		env_failure(backup, NULL, -1);
-	printf("syntax error");
+		env_failure(backup, -1); // ??? Ca va fail en boucle infinie
+	printf("syntax error"); // ??? pourquoi syntax error? c'est une erreur d'alloc
 	return (ret);
 }
 
 void	print_env(char **ep)
 {
-	while (*ep && strchr(**ep, '='))
+	while (*ep && ft_strchr(*ep, '='))
 	{
-		printf("%s\n", *ep);
+		ft_putendl(*ep);
 		ep++;
 	}
 }
 
-int		minishell_exec(char **av, char **ep)
+void		minishell_exec(char *path, char **av, char **ep)
 {
-
+	(void)av;
+	(void)ep;
+	printf("EXECUTE: %s\n", path);
 }
 
 int		handle_cmdargs(char ***av)
@@ -91,55 +92,43 @@ int		handle_cmdargs(char ***av)
 	return (0);
 }
 
-int		handle_env_outcome(char **av, char **ep, char **backup, char **path)
+int		handle_env_outcome(char **av, char **ep, char **backup)
 {
 	char	*full_path;
 
-	full_path = get_first_path(*av, path);
+	full_path = get_first_path(*av);
 	if (errno == ENOMEM)
-		return (env_failure(backup, path, 127));
+		return (env_failure(backup, 127));
 	if (*av && full_path)
-        minishell_exec(full_path, ep);
+        minishell_exec(full_path, av, ep);
+    else if (!*av)							// dans le cas ou on rentre ici, c'est soit qu'on arrive a la fin de av et on print, soit ce n'est pas une commande et donc erreur.
+        	print_env(ep);
     else
 	{
-		if (!*av)							// dans le cas ou on rentre ici, c'est soit qu'on arrive a la fin de av et on print, soit ce n'est pas une commande et donc erreur.
-        	print_env(ep);
-		else
-		{
-			free(full_path);
-			return (env_failure(backup, path, 127));
-		}
+    	free(full_path);
+    	return (env_failure(backup, 127));
 	}
 	free(full_path);
-}*/
+    return (0);
+}
 
 int		builtin_env(int ac, char **av, char **ep)
 {
-	(void)ep, (void)ac, (void)av;
-	return (0);
-	/*char	**path;
 	char	**backup;
 	int		i;
 	int		ret;
 
 	(void)ac;
 	i = 0;
-	path = ft_split(ft_getenv("PATH"), ':');
-	if (!path)
-		return (-1);
     backup = strarr_dup(ep, g_global_data.env->count);			// Creer une fonction dans la lib qui fait une copie d'un tableau de string vers un a
 	if (!backup)
-	{
-		ft_destroy_array(path, NULL_ENDED);
 		return (-1);
-	}
 	av++;
 	ret = handle_cmdargs(&av);
 	if (ret != 0)
-		return (env_failure(backup, path, ret));
-	ft_destroy_array(path, NULL_ENDED);
+		return (env_failure(backup, ret));
 	ft_clearenv();
 	if (retrieve_env(backup) == -1)
-		env_failure(backup, NULL, -1);
-	return (0);*/
+		return (-1);
+	return (0);
 }

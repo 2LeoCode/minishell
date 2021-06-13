@@ -12,10 +12,17 @@
 
 #include <minishell.h>
 
-int builtin_unset(int ac, char ** av, char ** ep)
+int builtin_unset(int ac, char **av, char **ep)
 {
-	(void)ac;
-	(void)av;
 	(void)ep;
+	while (--ac > 0)
+	{
+		if (!ft_strcmp(av[ac], "PATH"))
+		{
+			ft_destroy_array((void **)g_global_data.path, NULL_ENDED);
+			g_global_data.is_path_set = false;
+		}
+		ft_delenv(av[ac]);
+	}
 	return (0);
 }

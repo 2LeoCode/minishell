@@ -14,21 +14,15 @@
 
 int		builtin_cd(int ac, char **av, char **ep)
 {
-	(void)ep, (void)ac, (void)av;
-	return (0);
-	/*if (ac == 1 || strcmp(av[1], "~") != 0)
+	(void)ep;
+	if (ac == 1 || strcmp(av[1], "~") != 0)
+		chdir(ft_getenv("HOME"));
+	else if (chdir(av[1]))
 	{
-		if (!chdir(ft_getenv("HOME")));
-			return (0);
+		printf("%s : not a valid directory\n", av[1]);
+		return (-1);
 	}
-	else
-	{
-		if (!chdir(av[1]))
-			return (0);
-		else
-		{
-			printf("%s : not a valid directory\n", av[1]);
-			return (-1);
-		}
-	}*/
+	if (ft_setenv("PWD", getenv("PWD")))
+		return (-1); // Je recupere la vraie variable PWD dans la globale
+	return (0);
 }

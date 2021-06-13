@@ -12,12 +12,12 @@
 
 #include <minishell.h>
 
-/*void	ft_printexp(char **ep)
+void	ft_printexp(char **ep)
 {
 	while (*ep)
 	{
 		if (ft_strncmp(*ep, "_=", 2))
-			printf("%s\n", *ep);			
+			ft_putendl(*ep);
 		ep++;
 	}
 }
@@ -41,15 +41,13 @@ int		is_valid_arg(char *str)
 
 int		export_failure(int error)
 {
-	printf("syntax error");
+	printf("syntax error"); // ??? c'est pas une syntax error mais une erreur d'alloc
 	return (error);
-}*/
+}
 
 int		builtin_export(int ac, char ** av, char ** ep)
 {
-	(void)ep, (void)ac, (void)av;
-	return (0);
-	/*char	*rpl;
+	char	*rpl;
 	int		ret;
 
 	while (*av)
@@ -67,5 +65,5 @@ int		builtin_export(int ac, char ** av, char ** ep)
 	}
 	if (ac == 1)
 		ft_printexp(ep);
-	return (0);*/
+	return (0);
 }
