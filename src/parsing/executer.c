@@ -43,7 +43,7 @@ char	*get_first_path(char *executable_name)
 		return (NULL);
 	fd_test = open(full_path, O_RDONLY);
 	close(fd_test);
-	if (errno != EBADF)
+	if (fd_test != -1)
 		return (full_path);
 	free(full_path);
 	while (*it)
@@ -51,7 +51,7 @@ char	*get_first_path(char *executable_name)
 		full_path = ft_strcjoin(*it, executable_name, '/');
 		fd_test = open(full_path, O_RDONLY);
 		close(fd_test);
-		if (errno != EBADF)
+		if (fd_test != -1)
 			return (full_path);
 		free(full_path);
 		it++;
