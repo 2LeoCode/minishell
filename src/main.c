@@ -151,6 +151,7 @@ static int		process_input(t_shell *ms, char *input)
 	tokens = lexer(input, &token_cnt);
 	if (tokens)
 		cmd_array = parser(tokens, token_cnt);
+	pre_exit_save(cmd_array, tokens);
 	if (!tokens || !cmd_array)
 	{
 		if (errno == ENOMEM)

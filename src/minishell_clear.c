@@ -12,6 +12,35 @@
 
 #include <minishell.h>
 
+void	static_clear(t_cmd **cmd_arr, char **tokens)
+{
+	static t_cmd	**arr = NULL;
+	static void		**tok = NULL;
+
+	if (cmd_arr || tokens)
+	{
+		arr = cmd_arr;
+		tok = (void **)tokens;
+	}
+	else
+	{
+		if (arr)
+			destroy_cmd_array(arr);
+		if (tok)
+			ft_destroy_array(tok, NULL_ENDED);
+	}
+}
+
+void	pre_exit_save(t_cmd **cmd_arr, char **tokens)
+{
+	static_clear(cmd_arr, tokens);
+}
+
+void	pre_exit_clear(void)
+{
+	static_clear(NULL, NULL);
+}
+
 /*
 **	Destroys all global data
 */

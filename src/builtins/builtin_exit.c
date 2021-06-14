@@ -34,7 +34,6 @@ bool	ft_strisnumber(const char *s)
 int builtin_exit(int ac, char **av, char **ep)
 {
 	long long	ret;
-	size_t		len;
 
 	(void)ep;
 	ret = 0;
@@ -46,7 +45,6 @@ int builtin_exit(int ac, char **av, char **ep)
 	}
 	if (ac == 2 && 	**++av == '-')
 		(*av)++;
-	len = ft_strlen(*av);
 	if (ac == 2 && (!ft_strisnumber(*av)
 				|| ft_wrdlen(*av) > 19
 				|| (ft_wrdlen(*av) == 19

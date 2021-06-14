@@ -229,6 +229,8 @@ void	minishell_clear(void);
 
 char	*get_first_path(char *executable_name);
 int	update_path(const char *new_path, bool update_env);
+void	pre_exit_save(t_cmd **cmd_arr, char **tokens);
+void	pre_exit_clear(void);
 
 // note: DON't FORGET TO SET BACKUP TERMIOS BEFORE EXECUTOR
 

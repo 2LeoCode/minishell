@@ -15,12 +15,16 @@
 void	destroy_cmd_array(t_cmd **cmd_arr)
 {
 	t_cmd	**it;
+	int		i;
 
 	it = cmd_arr - 1;
 	while (*++it)
 	{
 		lst_destroy((*it)->out);
 		free((*it)->in);
+		i = -1;
+		while (++i < (*it)->argc)
+			free((*it)->argv[i]);
 		free(*it);
 	}
 	free(cmd_arr);
