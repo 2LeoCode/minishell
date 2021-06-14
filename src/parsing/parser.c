@@ -187,6 +187,9 @@ t_cmd	**parser(char **tokens, size_t token_cnt)
 	{
 		ac = arg_count(tokens);
 		cmd_arr[i] = malloc(sizeof(t_cmd) + (ac + 1) * sizeof(char *));
+		cmd_arr[i]->redirect_out = false;
+		cmd_arr[i]->redirect_out2 = false;
+		cmd_arr[i]->pipe = false;
 		cmd_arr[i]->argv[ac] = NULL;
 		if (!cmd_arr[i] || lst_init(&cmd_arr[i]->out))
 			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
