@@ -51,11 +51,11 @@ int		is_valid_arg(char *str)
 	return (1);
 }
 
-int	update_path(const char *new_path)
+int	update_path(const char *new_path, bool update_env)
 {
 	char	**new_split;
 
-	if (ft_setenv("PATH", new_path))
+	if (update_env && ft_setenv("PATH", new_path))
 		return (-1);
 	if (new_path)
 	{
@@ -83,7 +83,7 @@ int		builtin_export(int ac, char ** av, char ** ep)
 		if (!ft_strcmp(*av, "PATH"))
 		{
 			rpl += !!rpl;
-			ret = update_path(rpl);
+			ret = update_path(rpl, true);
 		}
 		else if (!rpl && !ft_getenv(*av))
 			ret = ft_setenv(*av, NULL);
