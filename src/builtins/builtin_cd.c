@@ -12,15 +12,33 @@
 
 #include <minishell.h>
 
+int		no_such_file(const char *path)
+{
+	ft_putstr_fd("minishell: cd: ", 2);
+	perror(path);
+	return (-1);
+}
+
 int		builtin_cd(int ac, char **av, char **ep)
 {
+	char	*home;
+
 	(void)ep;
-	if (ac == 1 || strcmp(av[1], "~") != 0)
-		chdir(ft_getenv("HOME"));
+	if (ac == 1 || !ft_strcmp(av[1], "~"))
+	{
+		home = ft_getenv("HOME");
+		if (!home)
+		{
+			ft_putendl_fd("minishell: cd: HOME not set", 2);
+			return (1);
+		}
+		if (chdir(home))
+			return (no_such_file(home));
+	}
 	else if (chdir(av[1]))
 	{
-		printf("%s : not a valid directory\n", av[1]);
-		return (-1);
+		perror("minishell");
+		return (1);
 	}
 	if (ft_setenv("PWD", getenv("PWD")))
 		return (-1); // Je recupere la vraie variable PWD dans la globale

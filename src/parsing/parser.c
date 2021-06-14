@@ -140,7 +140,7 @@ int		replace_env_tokens(char **tokens)
 				if (!ft_memcmp(ptr, "$?", 2))
 				{
 					env = ft_itoa(g_global_data.status);
-					if (!env || ft_strreplace_first(&ptr, "$?", env, NULL))
+					if (!env || ft_strreplace_first(tokens, "$?", env, free))
 					{
 						free(env);
 						return (-1);

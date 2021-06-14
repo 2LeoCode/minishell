@@ -21,11 +21,10 @@ int	create_file(const char *path)
 
 t_builtin_fun	search_builtin(t_shell *ms, char *name)
 {
-	const size_t	name_len = ft_strlen(name);
 	unsigned int	i;
 	
 	i = 0;
-	while (i < BUILTIN_COUNT && ft_memcmp(ms->builtin_fct_name[i], name, name_len))
+	while (i < BUILTIN_COUNT && ft_strcmp(ms->builtin_fct_name[i], name))
 		i++;
 	if (i == BUILTIN_COUNT)
 		return (NULL);
