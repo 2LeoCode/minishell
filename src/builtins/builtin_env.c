@@ -72,9 +72,19 @@ void	print_env(char **ep)
 
 void		minishell_exec(char *path, char **av, char **ep)
 {
+	pid_t pid;
+
 	(void)av;
 	(void)ep;
-	printf("EXECUTE: %s\n", path);
+	pid = fork();
+	if (pid == -1)
+		perror("minishell");
+	if (pid == 0)
+	{
+		execve(path, av, ep);
+		perror("minishell");
+	}
+	waitpid(pid, &g_global_data.status, 0);
 }
 
 int		handle_cmdargs(char ***av, char **path_backup)
