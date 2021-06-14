@@ -195,7 +195,7 @@ int	open_useful_files(t_cmd *current_cmd, t_fdio *fdio, const int stdfd[2])
 {
 	if (current_cmd->in)
 		fdio->in = open(current_cmd->in, O_RDONLY);
-	if (current_cmd->redirect_out)
+	if (lst_size(current_cmd->redirect_out))
 	{
 		fdio->out = open(current_cmd->out->next->data,
 			O_CREAT | O_WRONLY | O_TRUNC,
