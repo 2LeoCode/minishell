@@ -153,9 +153,11 @@ static int		process_input(t_shell *ms, char *input)
 		cmd_array = parser(tokens, token_cnt);
 	if (!tokens || !cmd_array)
 	{
-		minishell_error();
 		if (errno == ENOMEM)
+		{
+			minishell_error();
 			minishell_exit(-1);
+		}
 		g_global_data.status = 258;
 	}
 	else

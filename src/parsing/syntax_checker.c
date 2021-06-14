@@ -98,7 +98,7 @@ int     check_operator_excess(char *str)
    }
 */
 
-int main(int argc, char **argv)
+/*int main(int argc, char **argv)
 {
 	//	char *str = "echo bonjour | cat -e ;   \t\v|   \n  ";
 
@@ -107,4 +107,4 @@ int main(int argc, char **argv)
 	printf("check_first_character = %i\n", check_first_character(argv[1]));
 	printf("check_operator_excess = %i\n", check_operator_excess(argv[1]));
 	return (0);
-}
+}*/

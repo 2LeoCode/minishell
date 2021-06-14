@@ -54,15 +54,16 @@ int		save_history(void)
 	int			fd;
 	t_list		*lst;
 
-	if ((fd = open(g_global_data.history_path,
-				O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR)) == -1)
+	fd = open(g_global_data.history_path, O_CREAT | O_TRUNC | O_WRONLY, S_IWUSR | S_IRUSR);
+	if (fd == -1)
 		return (-1);
 	lst = g_global_data.history->prev;
 	while (lst != g_global_data.history)
 	{
 		write(fd, ": :0;", 5);
-		ft_putendl_fd((char*)lst->data, fd);
+		ft_putendl_fd((char *)lst->data, fd);
 		lst = lst->prev;
 	}
+	close(fd);
 	return (0);
 }

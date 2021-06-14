@@ -236,9 +236,9 @@ char	**tkntab_alloc(char *str, size_t cnt)
 
 char	**lexer(char *input_str, size_t *token_count)
 {
-	*token_count = token_cnt(input_str);
-	if (check_syntax(input_str))
+	if (ft_strisspace(input_str) || check_syntax(input_str))
 		return (NULL);
+	*token_count = token_cnt(input_str);
 	return (tkntab_alloc(input_str, *token_count));
 }
 

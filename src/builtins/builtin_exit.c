@@ -17,28 +17,46 @@
 **	exit that trows an error when called with a value that is superior to
 **	LONG_LONG_MAX (still needs some adjustments for lisibility)
 */
-int builtin_exit(int ac, char ** av, char ** ep)
+
+bool	ft_strisnumber(const char *s)
+{
+	while (ft_isspace(*s))
+		s++;
+	if (*s == '-' || *s == '+')
+		s++;
+	while (ft_isdigit(*s))
+		s++;
+	while (ft_isspace(*s))
+		s++;
+	return (!*s);
+}
+
+int builtin_exit(int ac, char **av, char **ep)
 {
 	long long	ret;
-	char		*ng;
+	size_t		len;
 
 	(void)ep;
+	ret = 0;
 	write(1, "exit\n", 5);
-	if (ac == 1)
-		minishell_exit(0);
-	else if (!ft_strisdigit(*av)
-	|| (((ret = ft_atoll(*av)) < 0) && !(ng = ft_strchr(*av, '-')))
-	|| ((ret > 0) && ng))
-	{
-		write(2, "minishell: exit: ", 6);
-		ft_putstr_fd(*av, 2);
-		write(2, ": numeric argument required\n", 28);
-		minishell_exit(255);
-	}
 	if (ac > 2)
 	{
 		write(2, "minishell: exit: too many arguments\n", 36);
 		return (1);
 	}
-	exit((unsigned char)ret);
+	if (ac == 2 && 	**++av == '-')
+		(*av)++;
+	len = ft_strlen(*av);
+	if (ac == 2 && (!ft_strisnumber(*av)
+				|| ft_wrdlen(*av) > 19
+				|| (ft_wrdlen(*av) == 19
+				&& ft_strcmp(*av, "9223372036854775807") > 0)))
+	{
+		write(2, "minishell: exit: ", 17);
+		ft_putstr_fd(*av, 2);
+		write(2, ": numeric argument required\n", 28);
+		minishell_exit(255);
+	}
+	minishell_exit((unsigned char)ret);
+	return (0);
 }

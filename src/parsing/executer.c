@@ -19,7 +19,7 @@ int	create_file(const char *path)
 	return (0);
 }
 
-/*t_builtin_fun	search_builtin(t_shell *ms, char *name)
+t_builtin_fun	search_builtin(t_shell *ms, char *name)
 {
 	const size_t	name_len = ft_strlen(name);
 	unsigned int	i;
@@ -30,7 +30,7 @@ int	create_file(const char *path)
 	if (i == BUILTIN_COUNT)
 		return (NULL);
 	return (ms->builtin_fct_ptr[i]);
-}*/
+}
 
 char	*get_first_path(char *executable_name)
 {
@@ -38,11 +38,20 @@ char	*get_first_path(char *executable_name)
 	char	*full_path;
 	const char	**it = (const char **)g_global_data.path;
 
+	full_path = ft_strdup(executable_name);
+	if (!full_path)
+		return (NULL);
+	fd_test = open(full_path, O_RDONLY);
+	close(fd_test);
+	if (errno != EBADF)
+		return (full_path);
+	free(full_path);
 	while (*it)
 	{
 		full_path = ft_strcjoin(*it, executable_name, '/');
 		fd_test = open(full_path, O_RDONLY);
-		if (fd_test != -1)
+		close(fd_test);
+		if (errno != EBADF)
 			return (full_path);
 		free(full_path);
 		it++;
@@ -86,7 +95,7 @@ pid_t	execute_cmd(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, const int stdfd[
 	t_builtin_fun	builtin_fun;
 
 	cpid = 0;
-	builtin_fun = NULL;(void)ms;//search_builtin(ms, *current_cmd->argv);
+	builtin_fun = search_builtin(ms, *current_cmd->argv);
 	if (fdio.in != -1)
 		dup2(fdio.in, 0);
 	if (fdio.out != -1)
@@ -112,7 +121,7 @@ void	do_pipe_child(t_shell *ms, t_cmd *current_cmd, t_executor exec)
 		dup2(exec.pipefd[1], 1);
 	if (exec.fdio.in != -1)
 		dup2(exec.fdio.in, 0);
-	builtin_fun = NULL;(void)ms;//search_builtin(ms, *current_cmd->argv);
+	builtin_fun = search_builtin(ms, *current_cmd->argv);
 	if (builtin_fun)
 	{
 		g_global_data.status = (*builtin_fun)(current_cmd->argc, current_cmd->argv, g_global_data.env->data);

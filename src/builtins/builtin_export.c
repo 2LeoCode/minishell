@@ -14,10 +14,22 @@
 
 void	ft_printexp(char **ep)
 {
+	char	*rpl;
+
 	while (*ep)
 	{
 		if (ft_strncmp(*ep, "_=", 2))
-			ft_putendl(*ep);
+		{
+			ft_putstr("declare -x ");
+			rpl = ft_rplchr(*ep, '=', 0);
+			ft_putstr(*ep);
+			if (rpl)
+			{
+				ft_putstr("=\"");
+				ft_putstr(rpl + 1);
+				ft_putendl("\"");
+			}
+		}
 		ep++;
 	}
 }
@@ -45,6 +57,20 @@ int		export_failure(int error)
 	return (error);
 }
 
+int	update_path(const char *new_path)
+{
+	char	**new_split;
+
+	if (ft_setenv("PATH", new_path))
+		return (-1);
+	new_split = ft_split(new_path, ':');
+	if (!new_split)
+		return (-1);
+	ft_destroy_array((void **)g_global_data.path, NULL_ENDED);
+	g_global_data.path = new_split;
+	return (0);
+}
+
 int		builtin_export(int ac, char ** av, char ** ep)
 {
 	char	*rpl;
@@ -55,7 +81,9 @@ int		builtin_export(int ac, char ** av, char ** ep)
 		if (!is_valid_arg(*av))
 			return (export_failure(1));
 		rpl = ft_rplchr(*av, '=', '\0');
-		if (!rpl)
+		if (!ft_strcmp(*av, "PATH") && rpl)
+			ret = update_path(rpl + 1);
+		else if (!rpl && !ft_getenv(*av))
 			ret = ft_setenv(*av, NULL);
 		else
 			ret = ft_setenv(*av, rpl + 1);

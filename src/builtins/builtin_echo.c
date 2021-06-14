@@ -52,8 +52,6 @@ void    ft_putecho(char **av, int ac, bool *n_flag)
 
 int builtin_echo(int ac, char **av, char **ep)
 {
-	(void)ep, (void)ac, (void)av;
-	return (0);
 	bool n_flag;
 
 	(void)ep;

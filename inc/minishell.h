@@ -228,5 +228,8 @@ int		executer(t_shell *ms, t_cmd **cmd_arr);
 void	minishell_clear(void);
 
 char	*get_first_path(char *executable_name);
+int	update_path(const char *new_path);
+
+// note: DON't FORGET TO SET BACKUP TERMIOS BEFORE EXECUTOR
 
 #endif

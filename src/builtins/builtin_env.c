@@ -17,15 +17,18 @@ char	**strarr_dup(char **src, size_t size)
 	char	**arr;
 	size_t		i;
 
-	i = 0;
-	arr = ft_calloc(size + 1, sizeof(char*));
+	i = ((size_t)-1);
+	arr = ft_calloc(size + 1, sizeof(char *));
 	if (!arr)
 		return NULL;
-	while (i++ < size)
+	while (++i < size)
 	{
 		arr[i] = ft_strdup(src[i]);
 		if (!arr[i])
+		{
 			ft_destroy_array((void **)arr, NULL_ENDED);
+			return (NULL);
+		}
 	}
 	return (arr);
 }
@@ -51,10 +54,7 @@ int		retrieve_env(char **backup)
 
 int		env_failure(char **backup, int ret)
 {
-	ft_clearenv();
-	if (retrieve_env(backup) == -1)
-		env_failure(backup, -1); // ??? Ca va fail en boucle infinie
-	printf("syntax error"); // ??? pourquoi syntax error? c'est une erreur d'alloc
+	ft_destroy_array((void **)backup, NULL_ENDED);
 	return (ret);
 }
 
@@ -74,7 +74,7 @@ void		minishell_exec(char *path, char **av, char **ep)
 	printf("EXECUTE: %s\n", path);
 }
 
-int		handle_cmdargs(char ***av)
+int		handle_cmdargs(char ***av, char **path_backup)
 {
 	char *rpl;
 
@@ -85,28 +85,44 @@ int		handle_cmdargs(char ***av)
 			break ;
 		if (!***av)
 			return (1);
-		if (ft_setenv(**av, rpl + 1) == -1)	// Attention !! Changer retour de ft_rplchr() pour qu'il return le pointeur sur caractere remplace. && Faire en sorte que set_env() mette une string vide si *rpl == "\0".
+		if (!ft_strcmp(**av, "PATH"))
+		{
+			*path_backup = ft_getenv("PATH");
+			if (*path_backup)
+			{
+				*path_backup = ft_strdup("PATH");
+				if (!*path_backup)
+					return (-1);
+			}
+			if (update_path(rpl + 1))
+			{
+				free(*path_backup);
+				return (-1);
+			}
+			g_global_data.is_path_set = true;
+		}
+		else if (ft_setenv(**av, rpl + 1) == -1)	// Attention !! Changer retour de ft_rplchr() pour qu'il return le pointeur sur caractere remplace. && Faire en sorte que set_env() mette une string vide si *rpl == "\0".
 			return (-1);
 		(*av)++;
 	}
 	return (0);
 }
 
-int		handle_env_outcome(char **av, char **ep, char **backup)
+int		handle_env_outcome(char **av, char **ep)
 {
 	char	*full_path;
 
 	full_path = get_first_path(*av);
 	if (errno == ENOMEM)
-		return (env_failure(backup, 127));
+		return (127);
 	if (*av && full_path)
         minishell_exec(full_path, av, ep);
     else if (!*av)							// dans le cas ou on rentre ici, c'est soit qu'on arrive a la fin de av et on print, soit ce n'est pas une commande et donc erreur.
-        	print_env(ep);
+    	print_env(ep);
     else
 	{
     	free(full_path);
-    	return (env_failure(backup, 127));
+    	return (127);
 	}
 	free(full_path);
     return (0);
@@ -115,6 +131,7 @@ int		handle_env_outcome(char **av, char **ep, char **backup)
 int		builtin_env(int ac, char **av, char **ep)
 {
 	char	**backup;
+	char	*path_backup;
 	int		i;
 	int		ret;
 
@@ -124,9 +141,16 @@ int		builtin_env(int ac, char **av, char **ep)
 	if (!backup)
 		return (-1);
 	av++;
-	ret = handle_cmdargs(&av);
+	ret = handle_cmdargs(&av, &path_backup);
 	if (ret != 0)
 		return (env_failure(backup, ret));
+	ret = handle_env_outcome(av, ep);
+	if (ret != 0)
+		return (env_failure(backup, ret));
+	ret = update_path(path_backup);
+	free(path_backup);
+	if (ret == -1)
+		return (-1);
 	ft_clearenv();
 	if (retrieve_env(backup) == -1)
 		return (-1);
