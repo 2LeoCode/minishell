@@ -51,21 +51,20 @@ int		is_valid_arg(char *str)
 	return (1);
 }
 
-int		export_failure(int error)
-{
-	printf("syntax error"); // ??? c'est pas une syntax error mais une erreur d'alloc
-	return (error);
-}
-
 int	update_path(const char *new_path)
 {
 	char	**new_split;
 
 	if (ft_setenv("PATH", new_path))
 		return (-1);
-	new_split = ft_split(new_path, ':');
-	if (!new_split)
-		return (-1);
+	if (new_path)
+	{
+		new_split = ft_split(new_path, ':');
+		if (!new_split)
+			return (-1);
+	}
+	else
+		new_split = NULL;
 	ft_destroy_array((void **)g_global_data.path, NULL_ENDED);
 	g_global_data.path = new_split;
 	return (0);
@@ -79,16 +78,19 @@ int		builtin_export(int ac, char ** av, char ** ep)
 	while (*av)
 	{
 		if (!is_valid_arg(*av))
-			return (export_failure(1));
+			return (1);
 		rpl = ft_rplchr(*av, '=', '\0');
-		if (!ft_strcmp(*av, "PATH") && rpl)
-			ret = update_path(rpl + 1);
+		if (!ft_strcmp(*av, "PATH"))
+		{
+			rpl += !!rpl;
+			ret = update_path(rpl);
+		}
 		else if (!rpl && !ft_getenv(*av))
 			ret = ft_setenv(*av, NULL);
 		else
 			ret = ft_setenv(*av, rpl + 1);
 		if (ret == -1)
-			return (export_failure(-1));
+			return (-1);
 		av++;
 	}
 	if (ac == 1)

@@ -149,7 +149,6 @@ int			minishell_setup(t_shell *ms, char **envp)
 		ft_clearenv();
 		return (-1);
 	}
-	g_global_data.is_path_set = true;
 	g_global_data.history_path = ft_getenv("HISTFILE");
 	if (!g_global_data.history_path)
 		g_global_data.history_path = ".ms_history";

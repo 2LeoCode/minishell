@@ -17,7 +17,7 @@ char	**strarr_dup(char **src, size_t size)
 	char	**arr;
 	size_t		i;
 
-	i = ((size_t)-1);
+	i = -1;
 	arr = ft_calloc(size + 1, sizeof(char *));
 	if (!arr)
 		return NULL;
@@ -33,7 +33,7 @@ char	**strarr_dup(char **src, size_t size)
 	return (arr);
 }
 
-int		retrieve_env(char **backup)
+int		retrieve_env(char **backup, char *path_backup)
 {
 	size_t i;
 
@@ -49,6 +49,9 @@ int		retrieve_env(char **backup)
 		g_global_data.env->data[i] = backup[i];
 	g_global_data.env->data[i] = NULL;
 	free(backup);
+	if (path_backup && update_path(path_backup))
+		return (-1);
+	free(path_backup);
 	return (0);
 }
 
@@ -99,7 +102,6 @@ int		handle_cmdargs(char ***av, char **path_backup)
 				free(*path_backup);
 				return (-1);
 			}
-			g_global_data.is_path_set = true;
 		}
 		else if (ft_setenv(**av, rpl + 1) == -1)	// Attention !! Changer retour de ft_rplchr() pour qu'il return le pointeur sur caractere remplace. && Faire en sorte que set_env() mette une string vide si *rpl == "\0".
 			return (-1);
@@ -112,12 +114,14 @@ int		handle_env_outcome(char **av, char **ep)
 {
 	char	*full_path;
 
-	full_path = get_first_path(*av);
+	full_path = NULL;
+	if (*av)
+		full_path = get_first_path(*av);
 	if (errno == ENOMEM)
 		return (127);
 	if (*av && full_path)
         minishell_exec(full_path, av, ep);
-    else if (!*av)							// dans le cas ou on rentre ici, c'est soit qu'on arrive a la fin de av et on print, soit ce n'est pas une commande et donc erreur.
+    else if (!*av)						// dans le cas ou on rentre ici, c'est soit qu'on arrive a la fin de av et on print, soit ce n'est pas une commande et donc erreur.
     	print_env(ep);
     else
 	{
@@ -132,11 +136,10 @@ int		builtin_env(int ac, char **av, char **ep)
 {
 	char	**backup;
 	char	*path_backup;
-	int		i;
 	int		ret;
 
 	(void)ac;
-	i = 0;
+	path_backup = NULL;
     backup = strarr_dup(ep, g_global_data.env->count);			// Creer une fonction dans la lib qui fait une copie d'un tableau de string vers un a
 	if (!backup)
 		return (-1);
@@ -147,12 +150,10 @@ int		builtin_env(int ac, char **av, char **ep)
 	ret = handle_env_outcome(av, ep);
 	if (ret != 0)
 		return (env_failure(backup, ret));
-	ret = update_path(path_backup);
-	free(path_backup);
 	if (ret == -1)
 		return (-1);
 	ft_clearenv();
-	if (retrieve_env(backup) == -1)
+	if (retrieve_env(backup, path_backup) == -1)
 		return (-1);
 	return (0);
 }

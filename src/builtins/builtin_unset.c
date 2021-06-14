@@ -20,9 +20,10 @@ int builtin_unset(int ac, char **av, char **ep)
 		if (!ft_strcmp(av[ac], "PATH"))
 		{
 			ft_destroy_array((void **)g_global_data.path, NULL_ENDED);
-			g_global_data.is_path_set = false;
+			g_global_data.path = NULL;
 		}
-		ft_delenv(av[ac]);
+		if (ft_delenv(av[ac]))
+			return (-1);
 	}
 	return (0);
 }

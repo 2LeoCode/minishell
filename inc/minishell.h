@@ -61,7 +61,6 @@ extern struct	s_globaldata
 	t_list			*history;
 	char			*history_path;
 	char			**path;
-	bool			is_path_set;
 	int				status;
 	struct s_env
 	{
