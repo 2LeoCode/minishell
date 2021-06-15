@@ -234,6 +234,6 @@ int	update_path(const char *new_path, bool update_env);
 void	pre_exit_save(t_cmd **cmd_arr, char **tokens, int token_cnt);
 void	pre_exit_clear(void);
 
-// note: DON't FORGET TO SET BACKUP TERMIOS BEFORE EXECUTOR
+char	*ft_get_current_dir_name(void);
 
 #endif
