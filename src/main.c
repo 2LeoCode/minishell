@@ -149,9 +149,10 @@ static int		process_input(t_shell *ms, char *input)
 		return (-1);
 	cmd_array = NULL;
 	tokens = lexer(input, &token_cnt);
+	free(input);
 	if (tokens)
 		cmd_array = parser(tokens, token_cnt);
-	pre_exit_save(cmd_array, tokens);
+	pre_exit_save(cmd_array, tokens, token_cnt);
 	if (!tokens || !cmd_array)
 	{
 		if (errno == ENOMEM)
@@ -161,11 +162,22 @@ static int		process_input(t_shell *ms, char *input)
 		}
 		g_global_data.status = 258;
 	}
+	else if (tcsetattr(0, 0, &g_global_data.term_backup) == -1)
+	{
+		minishell_error();
+		minishell_exit(-1);
+	}
 	else
 	{
 		ret = executer(ms, cmd_array);
-		ft_destroy_array((void **)tokens, token_cnt);
-		destroy_cmd_array(cmd_array);
+		pre_exit_clear();
+		if (g_global_data.sigint)
+			g_global_data.sigint = false;
+		if (tcsetattr(0, 0, &g_global_data.term_current) == -1)
+		{
+			minishell_error();
+			minishell_exit(-1);
+		}
 	}
 	return (ret);
 }
@@ -187,7 +199,6 @@ static void		prompt(t_shell *ms, char **input_ptr)
 			perror("minishell");
 			minishell_exit(-1);
 		}
-		free(*input_ptr);
 	}
 }
 

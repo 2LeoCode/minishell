@@ -12,7 +12,7 @@
 
 #include <minishell.h>
 
-void	static_clear(t_cmd **cmd_arr, char **tokens)
+void	static_clear(t_cmd **cmd_arr, char **tokens, int token_cnt)
 {
 	static t_cmd	**arr = NULL;
 	static void		**tok = NULL;
@@ -27,18 +27,19 @@ void	static_clear(t_cmd **cmd_arr, char **tokens)
 		if (arr)
 			destroy_cmd_array(arr);
 		if (tok)
-			ft_destroy_array(tok, NULL_ENDED);
+			ft_destroy_array(tok, token_cnt);
 	}
 }
 
-void	pre_exit_save(t_cmd **cmd_arr, char **tokens)
+void	pre_exit_save(t_cmd **cmd_arr, char **tokens, int token_cnt)
 {
-	static_clear(cmd_arr, tokens);
+	if (cmd_arr && tokens)
+		static_clear(cmd_arr, tokens, token_cnt);
 }
 
 void	pre_exit_clear(void)
 {
-	static_clear(NULL, NULL);
+	static_clear(NULL, NULL, 0);
 }
 
 /*

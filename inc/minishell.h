@@ -58,15 +58,17 @@ void	kek(void);
 extern struct	s_globaldata
 {
 	bool			sigint;
-	struct termios	term_backup;
+	pid_t			current_cpid;
 	t_list			*history;
 	char			*history_path;
 	char			**path;
 	int				status;
+	struct termios	term_backup;
+	struct termios	term_current;
 	struct s_env
 	{
-		int		count;
-		char	*data[];
+		int			count;
+		char		*data[];
 	}	*env;
 }	g_global_data;
 
@@ -168,7 +170,7 @@ int		syntax_error(char *unexpected_token);
 **	sig_handling.c
 */
 void	int_handler(int);
-void	abort_handler(int);
+void	quit_handler(int sig);
 
 /*
 **	minishell_setup.c
@@ -229,7 +231,7 @@ void	minishell_clear(void);
 
 char	*get_first_path(char *executable_name);
 int	update_path(const char *new_path, bool update_env);
-void	pre_exit_save(t_cmd **cmd_arr, char **tokens);
+void	pre_exit_save(t_cmd **cmd_arr, char **tokens, int token_cnt);
 void	pre_exit_clear(void);
 
 // note: DON't FORGET TO SET BACKUP TERMIOS BEFORE EXECUTOR

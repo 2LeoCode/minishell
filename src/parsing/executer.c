@@ -103,6 +103,7 @@ pid_t	execute_cmd(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, const int stdfd[
 		g_global_data.status = (*builtin_fun)(current_cmd->argc, current_cmd->argv, g_global_data.env->data);
 	else
 		cpid = run_executable(current_cmd, get_first_path(*current_cmd->argv));
+	g_global_data.current_cpid = cpid;
 	close_fdio(fdio);
 	dup2(stdfd[0], 0);
 	dup2(stdfd[1], 1);
@@ -124,6 +125,9 @@ void	do_pipe_child(t_shell *ms, t_cmd *current_cmd, t_executor exec)
 	if (builtin_fun)
 	{
 		g_global_data.status = (*builtin_fun)(current_cmd->argc, current_cmd->argv, g_global_data.env->data);
+		free(exec.full_path);
+		pre_exit_clear();
+		minishell_clear();
 		exit(EXIT_SUCCESS);
 	}
 	execve(exec.full_path, current_cmd->argv, g_global_data.env->data);
@@ -155,6 +159,7 @@ pid_t	execute_cmd_pipe(t_shell *ms, t_cmd *current_cmd, t_fdio fdio, const int s
 		return (cmd_fail(full_path));
 	if (!cpid)
 		do_pipe_child(ms, current_cmd, exec);
+	g_global_data.current_cpid = cpid;
 	close(pipefd[1]);
 	if (fdio.in != -1)
 		close(fdio.in);
@@ -227,6 +232,7 @@ void	wait_if_child_running(pid_t cpid)
 	{
 		waitpid(cpid, &g_global_data.status, 0);
 		cpid = 0;
+		g_global_data.current_cpid = 0;
 	}
 }
 
@@ -254,5 +260,6 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 	}
 	if (cpid)
 		waitpid(cpid, &g_global_data.status, 0);
+	g_global_data.current_cpid = 0;
 	return (0);
 }

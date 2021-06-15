@@ -52,7 +52,6 @@ CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror #-fsanitize=address -g3
 LCFLAGS =	$(addprefix -L, $(LIBDIR)) lib/libft.a lib/liblist.a lib/libgnl.a $(addprefix -l, $(LIB))
 
 ifeq ($(OS), Darwin)
-####  COLORS MAC  ####
 	KNRM =		\x1B[0m
 	KRED =		\x1B[31m
 	KGRN =		\x1B[32m
@@ -61,9 +60,7 @@ ifeq ($(OS), Darwin)
 	KMAG =		\x1B[35m
 	KCYN =		\x1B[36m
 	KWHT =		\x1B[37m
-######################
 else
-#### COLORS LINUX ####
 	KNRM =		\e[39m
 	KRED =		\e[31m
 	KGRN =		\e[32m

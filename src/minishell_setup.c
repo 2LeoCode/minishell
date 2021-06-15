@@ -16,8 +16,8 @@ struct s_globaldata	g_global_data = {0};
 
 /*
 **	In this function we will get the current terminal attributes into two
-**	`struct termios`, one that we edit through bit mask to remove the ICANON
-**	(canonical-mode) and ECHO (echo-mode) and apply to our current terminal
+**	`struct `, one that we edit through bit mask to remove the ICANON
+**	(canonical-termiosmode) and ECHO (echo-mode) and apply to our current terminal
 **	through `tcsetattr`, and one that we will keep as a backup to reset the
 **	terminal to how it was before at the end of the program.
 **	The non-canonical mode will make the `read` function non-blocking, so every
@@ -31,14 +31,12 @@ struct s_globaldata	g_global_data = {0};
 */
 static int	setup_termios(void)
 {
-	struct termios	current;
-
-	if ((tcgetattr(0, &current) == -1)
+	if ((tcgetattr(0, &g_global_data.term_current) == -1)
 	|| (tcgetattr(0, &g_global_data.term_backup) == -1))
 		return (-1);
-	current.c_lflag &= ~(ICANON);
-	current.c_lflag &= ~(ECHO);
-	if (tcsetattr(0, 0, &current) == -1)
+	g_global_data.term_current.c_lflag &= ~(ICANON);
+	g_global_data.term_current.c_lflag &= ~(ECHO);
+	if (tcsetattr(0, 0, &g_global_data.term_current) == -1)
 	{
 		write(2, "Error while editing terminal attributes\n", 40);
 		return (-1);
@@ -104,7 +102,7 @@ sig_t		setup_signal(void)
 
 	ret = signal(SIGINT, &int_handler);
 	if (ret != SIG_ERR)
-		ret = signal(SIGABRT, &abort_handler);
+		ret = signal(SIGQUIT, &quit_handler);
 	return (ret);
 }
 
