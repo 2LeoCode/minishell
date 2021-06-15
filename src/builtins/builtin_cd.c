@@ -73,12 +73,12 @@ int		builtin_cd(int ac, char **av, char **ep)
 	int		ret;
 
 	(void)ep;
-	if (ft_setenv("OLDPWD", ft_getenv("PWD")))
-		return (-1);
 	home = ft_getenv("HOME");
 	ret = handle_argv(ac, home, av[1]);
 	if (ret)
 		return (ret);
+	if (ft_setenv("OLDPWD", ft_getenv("PWD")))
+		return (-1);
 	new_pwd = ft_get_current_dir_name();
 	if (!new_pwd)
 		return (-1);

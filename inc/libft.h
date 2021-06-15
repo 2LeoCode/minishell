@@ -50,7 +50,7 @@ char				*ft_ltoa(long n);
 char				*ft_ltoa_u(unsigned long n);
 void				*ft_memccpy(void *dst, const void *src, int c, size_t n);
 void				*ft_memcdup(const void *s, size_t len, char c);
-void				*ft_memchr(const void *s, int c, size_t n);
+void				*ft_memchr(const void *b, int c, size_t n);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
 void				*ft_memcpy(void *dst, const void *src, size_t n);
 void				*ft_memdup(const void *s1, size_t len);
@@ -115,6 +115,7 @@ char				*ft_strndup(const char *s1, size_t n);
 size_t				ft_strnlen(const char *s, size_t maxlen);
 char				*ft_strnstr(const char *haystack, const char *needle,
 						size_t n);
+char				*ft_strntrim(const char *s, const char *set, size_t n);
 char				*ft_strrchr(const char *s, int c);
 int					ft_strreplace(char *s, char *before, char *after);
 int					ft_strreplace_first(char **dst_ptr, char *before,
