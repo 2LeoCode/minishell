@@ -33,7 +33,9 @@ bool	ft_strisnumber(const char *s)
 
 int builtin_exit(int ac, char **av, char **ep)
 {
-	long long	ret;
+	long long			ret;
+	unsigned long long	value;
+	char				*ptr;
 
 	(void)ep;
 	ret = 0;
@@ -43,17 +45,18 @@ int builtin_exit(int ac, char **av, char **ep)
 		write(2, "minishell: exit: too many arguments\n", 36);
 		return (1);
 	}
-	if (ac == 2 && 	**++av == '-')
-		(*av)++;
-	if (ac == 2 && (!ft_strisnumber(*av)
-				|| ft_wrdlen(*av) > 19
-				|| (ft_wrdlen(*av) == 19
-				&& ft_strcmp(*av, "9223372036854775807") > 0)))
+	if (ac == 2)
 	{
-		write(2, "minishell: exit: ", 17);
-		ft_putstr_fd(*av, 2);
-		write(2, ": numeric argument required\n", 28);
-		minishell_exit(255);
+		ptr = *++av;
+		value = ft_atoll_u(ptr + (*ptr == '-'));
+		if (ft_wrdlen(*ptr) > 20 || value > LLONG_MAX)
+		{
+			write(2, "minishell: exit: ", 17);
+			ft_putstr_fd(*av, 2);
+			write(2, ": numeric argument required\n", 28);
+			minishell_exit(255);
+		}
+		ret = ft_atoll(ptr);
 	}
 	minishell_exit((unsigned char)ret);
 	return (0);
