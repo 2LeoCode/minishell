@@ -172,6 +172,25 @@ int		replace_env_tokens(char **tokens)
 	return (0);
 }
 
+t_cmd	**cmd_arr_without_quotes(t_cmd **cmd_arr)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	while (cmd_arr[++i])
+	{
+		j = -1;
+		while (++j < cmd_arr[i].argc)
+			if ((*cmd_arr[i].argv[j] == "\'" || *cmd_arr[i].argv[j] == "\"")
+			&& remove_quotes(&cmd_arr[i].argv[j]))
+			{
+				destroy_cmd_array(cmd_arr);
+				return (NULL);
+			}
+	}
+}
+
 t_cmd	**parser(char **tokens, size_t token_cnt)
 {
 	const size_t	count = cmd_count(tokens);
@@ -204,5 +223,5 @@ t_cmd	**parser(char **tokens, size_t token_cnt)
 			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
 		tokens = tmp;
 	}
-	return (cmd_arr);
+	return (cmd_arr_without_quotes(cmd_arr));
 }
