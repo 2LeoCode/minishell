@@ -49,7 +49,7 @@ int builtin_exit(int ac, char **av, char **ep)
 	{
 		ptr = *++av;
 		value = ft_atoll_u(ptr + (*ptr == '-'));
-		if (ft_wrdlen(*ptr) > 20 || value > LLONG_MAX)
+		if (ft_wrdlen(ptr + (*ptr == '-')) > 20 || value > LLONG_MAX)
 		{
 			write(2, "minishell: exit: ", 17);
 			ft_putstr_fd(*av, 2);

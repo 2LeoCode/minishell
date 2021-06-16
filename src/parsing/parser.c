@@ -154,6 +154,7 @@ int		replace_env_tokens(char **tokens)
 					continue ;
 				}
 				to_replace = ft_strndup(ptr, ft_wrdlen(ptr));
+				ft_rplchr(to_replace, '\"', 0);
 				if (!to_replace)
 					return (-1);
 				env = ft_getenv(to_replace + 1);

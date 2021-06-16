@@ -26,10 +26,10 @@ int	command_error(char *command)
 	return (-1);
 }
 
-int	syntax_error(char *unexpected_token)
+int	syntax_error(char unexpected_token)
 {
 	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-	ft_putstr_fd(unexpected_token, 2);
+	ft_putchar_fd(unexpected_token, 2);
 	ft_putendl_fd("'", 2);
 	return (-1);
 }

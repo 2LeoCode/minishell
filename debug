@@ -1,1 +1,1 @@
-Parsing: gerer les variables dans les double quote
+Lexer: `;` `|` au debut ne return pas d'erreur
