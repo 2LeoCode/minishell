@@ -33,7 +33,7 @@ int     check_first_character(char *str)
     i = 0;
     ft_skip_whitespace(str);
     if (str[i] == ';' || str[i] == '|')
-        return (1);
+		return (syntax_error(str[i]));
     return (0);
 }
 
@@ -48,8 +48,8 @@ int     check_last_character(char *str)
     while (i > 0 && ft_isspace(str[i]))
         i--;
     if (ft_strchr("<>|", str[i]))
-        return (2);
-    return (0);
+		return (syntax_error(str[i]));
+	return (0);
 }
 
 int     check_operator_excess(char *str)
@@ -68,7 +68,7 @@ int     check_operator_excess(char *str)
             if (str[i] == 0)
                 return (0);
             else if (ft_strchr("<>|;", str[i]))
-                return (3);
+        		return (syntax_error(str[i]));
         }
         i++;
     }   
@@ -88,7 +88,7 @@ int     check_quotes(char *str)
             while (str[i] && str[i] != '"' && str[i - 1] != '\\')
                 i++;
             if (str[i] != '"' )
-                return (4);
+        		return (syntax_error(str[i]));
         }
         else if (str[i] == '\'' && (i == 0 || str[i - 1] != '\\'))
         {
@@ -96,7 +96,7 @@ int     check_quotes(char *str)
             while (str[i] && str[i] != '\'' && str[i - 1] != '\\')
                 i++;
             if (str[i] != '\'')
-                return (4);
+        		return (syntax_error(str[i]));
         }
         i++;
     }
