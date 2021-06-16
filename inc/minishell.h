@@ -164,7 +164,7 @@ int		builtin_unset(int, char **, char **);
 */
 int		minishell_error(void);
 int		command_error(char *command);
-int		syntax_error(char *unexpected_token);
+int		syntax_error(char unexpected_token);
 
 /*
 **	sig_handling.c
