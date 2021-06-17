@@ -11,6 +11,9 @@
 */
 static int	process_key(t_shell *ms, t_input *input, int key)
 {
+	int	ret;
+
+	ret = 0;
 	if (g_global_data.sigint)
 		handle_sigint(input);
 	if (key == _KEY_TAB || key == _KEY_EOF)
@@ -19,21 +22,18 @@ static int	process_key(t_shell *ms, t_input *input, int key)
 		return (1);
 	if (key == -1 || (ft_isprint(key) && process_key_print(input, key)))
 		return (-1);
-	else if (key == _KEY_DELETE)
-	{
-		if (!input->index)
-			return (0);
-		if (process_key_del(input))
-			return (-1);
-	}
+	else if (key == _KEY_DELETE && (!input->index || process_key_del(input)))
+		return (-1 * !!input->index);
 	else if (key == _KEY_LEFT)
 		return (process_key_left(&ms->tcaps, input));
 	else if (key == _KEY_RIGHT)
 		return (process_key_right(&ms->tcaps, input));
 	else if ((key == _KEY_UP) || (key == _KEY_DOWN))
-		if (process_key_hist(g_global_data.history, input,
-					key) == -1)
-			return (-1);
+		ret = process_key_hist(g_global_data.history, input,key);
+	if (ret == -1)
+		return (-1);
+	else if (ret == 1)
+		return (0);
 	return (update_input(&ms->tcaps, input));
 }
 
