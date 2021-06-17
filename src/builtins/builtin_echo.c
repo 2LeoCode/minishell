@@ -12,55 +12,56 @@
 
 #include <minishell.h>
 
-int     is_valid_nflag(char *str)
+int	is_valid_nflag(char *str)
 {
-    int i;
+	int	i;
 
-    i = 1;
-    while (str[i] && str[i] == 'n')
-        i++;
-    if (str[i] == ' ' || str[i] == '\0')
-        return (1);
-    return (0);
+	i = 1;
+	while (str[i] && str[i] == 'n')
+		i++;
+	if (str[i] == ' ' || str[i] == '\0')
+		return (1);
+	return (0);
 }
 
-void    ft_putecho(char **av, int ac, bool *n_flag)
+void	ft_putecho(char **av, int ac, bool *n_flag)
 {
-    int i;
+	int	i;
 
-    i = 1;
-    while (i < ac) 
-    {   
-        if (ft_strcmp(av[i], "-n") == 0 || (i == 1 && ft_strncmp(av[i], "-n", 2) == 0
-        && is_valid_nflag(av[i])))
-        {   
-                *n_flag = true;
-                av++;
-                ac--;
-        }   
-        else
-        {   
-            if (i != 1 && ft_strcmp(av[i - 1], "-n") != 0)
-                ft_putchar_fd(' ', 1); 
-            ft_putstr(av[i]);
-            i++;
-        }   
-    }  
-    if (!*n_flag)
-        ft_putchar_fd('\n', 1); 
+	i = 1;
+	while (i < ac)
+	{
+		if (ft_strcmp(av[i], "-n") == 0
+			|| (i == 1 && ft_strncmp(av[i], "-n", 2) == 0
+				&& is_valid_nflag(av[i])))
+		{
+			*n_flag = true;
+			av++;
+			ac--;
+		}
+		else
+		{
+			if (i != 1 && ft_strcmp(av[i - 1], "-n") != 0)
+				ft_putchar_fd(' ', 1);
+			ft_putstr(av[i]);
+			i++;
+		}
+	}
+	if (!*n_flag)
+		ft_putchar_fd('\n', 1);
 }
 
-int builtin_echo(int ac, char **av, char **ep)
+int	builtin_echo(int argc, char **argv, char **envp)
 {
-	bool n_flag;
+	bool	n_flag;
 
-	(void)ep;
-	if (ac == 1)
-	{   
-		ft_putchar_fd('\n', 1); 
+	(void)envp;
+	if (argc == 1)
+	{
+		ft_putchar_fd('\n', 1);
 		return (0);
 	}
 	n_flag = false;
-	ft_putecho(av, ac, &n_flag);
+	ft_putecho(argv, argc, &n_flag);
 	return (0);
 }

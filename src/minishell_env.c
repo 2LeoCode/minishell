@@ -1,19 +1,19 @@
 #include <minishell.h>
 
-void	ft_printenv(void)
+int	alloc_env(struct s_env **env_ptr, size_t size)
 {
-	for (int i = 0; i < g_global_data.env->count; i++)
-		printf("%d: %s\n", i, g_global_data.env->data[i]);
+	*env_ptr = malloc(sizeof(struct s_env) + size);
+	if (!*env_ptr)
+		return (-1);
+	return (0);
 }
 
-int		ft_addenv(const char *name, const char *value)
+int	ft_addenv(const char *name, const char *value)
 {
 	struct s_env	*new_env;
 	int				i;
 
-	new_env = malloc(sizeof(struct s_env)
-		+ (g_global_data.env->count + 2) * sizeof(char *));
-	if (!new_env)
+	if (alloc_env(&new_env, (g_global_data.env->count + 2) * sizeof(char *)))
 		return (-1);
 	new_env->count = g_global_data.env->count + 1;
 	new_env->data[new_env->count] = NULL;
@@ -44,9 +44,7 @@ int	ft_delenv(const char *name)
 
 	if (!ft_getenv(name))
 		return (0);
-	new_env = malloc(sizeof(struct s_env)
-		+ g_global_data.env->count * sizeof(char *));
-	if (!new_env)
+	if (alloc_env(&new_env, g_global_data.env->count * sizeof(char *)))
 		return (-1);
 	new_env->count = g_global_data.env->count - 1;
 	new_env->data[new_env->count] = NULL;
@@ -74,8 +72,8 @@ char	*ft_getenv(const char *name)
 	i = -1;
 	while (++i < g_global_data.env->count)
 		if (ft_strlen(g_global_data.env->data[i]) > name_len
-				&& g_global_data.env->data[i][name_len] == '='
-				&& !ft_memcmp(g_global_data.env->data[i], name, name_len))
+			&& g_global_data.env->data[i][name_len] == '='
+			&& !ft_memcmp(g_global_data.env->data[i], name, name_len))
 			break ;
 	if (i == g_global_data.env->count)
 		return (NULL);
@@ -90,8 +88,8 @@ int	ft_setenv(const char *name, const char *value)
 	i = 0;
 	name_len = ft_strlen(name);
 	while (i < g_global_data.env->count
-				&& g_global_data.env->data[i][name_len] == '='
-				&& !ft_memcmp(g_global_data.env->data[i], name, name_len))
+		&& g_global_data.env->data[i][name_len] == '='
+		&& !ft_memcmp(g_global_data.env->data[i], name, name_len))
 		i++;
 	if (value)
 	{
@@ -103,17 +101,4 @@ int	ft_setenv(const char *name, const char *value)
 	if (ft_addenv(name, value))
 		return (-1);
 	return (0);
-}
-
-void	ft_clearenv(void)
-{
-	int	i;
-
-	if (!g_global_data.env)
-		return ;
-	i = -1;
-	while (++i < g_global_data.env->count)
-		free(g_global_data.env->data[i]);
-	free(g_global_data.env);
-	g_global_data.env = NULL;
 }

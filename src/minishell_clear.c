@@ -51,3 +51,16 @@ void	minishell_clear(void)
 	ft_destroy_array((void **)g_global_data.path, NULL_ENDED);
 	ft_clearenv();
 }
+
+void	ft_clearenv(void)
+{
+	int	i;
+
+	if (!g_global_data.env)
+		return ;
+	i = -1;
+	while (++i < g_global_data.env->count)
+		free(g_global_data.env->data[i]);
+	free(g_global_data.env);
+	g_global_data.env = NULL;
+}

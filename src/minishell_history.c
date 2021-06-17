@@ -12,19 +12,28 @@
 
 #include <minishell.h>
 
+int	push_history(const char *input)
+{
+	if ((!lst_size(g_global_data.history)
+			|| ft_strcmp(input, (char*)g_global_data.history->next->data))
+		&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1))
+		return (-1);
+	return (0);
+}
+
 /*
 **	This function will read the history file that we set earlier in the
 **	HISTFILE environment variable using successive `get_next_line` calls to
 **	store the command history inside our chained list.
 */
-int		get_history(void)
+int	get_history(void)
 {
-	char	*line;
-	int		fd;
-	int		ret;
-	int		i;
+	char		*line;
+	const int	fd = open(g_global_data.history_path, O_RDONLY);
+	int			ret;
+	int			i;
 
-	if ((fd = open(g_global_data.history_path, O_RDONLY)) == -1)
+	if (fd == -1)
 		return (-1 * (errno != ENOENT));
 	ret = 1;
 	while (ret > 0)
@@ -36,11 +45,12 @@ int		get_history(void)
 		while (line[i] && (line[i++] != ';'))
 			continue ;
 		if (i && (line[i - 1] == ';')
-					&& lst_push_front(g_global_data.history, &line[i],
-					ft_strlen(&line[i]) + 1))
+			&& lst_push_front(g_global_data.history, &line[i],
+				ft_strlen(&line[i]) + 1))
 			ret = -1;
 		free(line);
 	}
+	close(fd);
 	line = NULL;
 	return (ret);
 }
@@ -49,12 +59,13 @@ int		get_history(void)
 **	This will simply do the opposite: read the command history from our list,
 **	and write it back into our history file.
 */
-int		save_history(void)
+int	save_history(void)
 {
 	int			fd;
 	t_list		*lst;
 
-	fd = open(g_global_data.history_path, O_CREAT | O_TRUNC | O_WRONLY, S_IWUSR | S_IRUSR);
+	fd = open(g_global_data.history_path, O_CREAT | O_TRUNC | O_WRONLY,
+			S_IWUSR | S_IRUSR);
 	if (fd == -1)
 		return (-1);
 	lst = g_global_data.history->prev;

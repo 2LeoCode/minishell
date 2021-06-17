@@ -31,31 +31,34 @@ bool	ft_strisnumber(const char *s)
 	return (!*s);
 }
 
-int builtin_exit(int ac, char **av, char **ep)
+void	numeric_argument_required(const char *arg)
+{
+	ft_putstr_fd("minishell: exit: ", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putendl_fd(": numeric argument required", 2);
+	minishell_exit(255);
+}
+
+int	builtin_exit(int argc, char **argv, char **envp)
 {
 	long long			ret;
 	unsigned long long	value;
 	char				*ptr;
 
-	(void)ep;
+	(void)envp;
 	ret = 0;
 	write(1, "exit\n", 5);
-	if (ac > 2)
+	if (argc > 2)
 	{
 		write(2, "minishell: exit: too many arguments\n", 36);
 		return (1);
 	}
-	if (ac == 2)
+	if (argc == 2)
 	{
-		ptr = *++av;
+		ptr = *++argv;
 		value = ft_atoll_u(ptr + (*ptr == '-'));
 		if (ft_wrdlen(ptr + (*ptr == '-')) > 20 || value > LLONG_MAX)
-		{
-			write(2, "minishell: exit: ", 17);
-			ft_putstr_fd(*av, 2);
-			write(2, ": numeric argument required\n", 28);
-			minishell_exit(255);
-		}
+			numeric_argument_required(*argv);
 		ret = ft_atoll(ptr);
 	}
 	minishell_exit((unsigned char)ret);

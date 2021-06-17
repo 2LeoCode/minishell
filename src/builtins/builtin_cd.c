@@ -12,14 +12,14 @@
 
 #include <minishell.h>
 
-int		no_such_file(const char *path)
+int	no_such_file(const char *path)
 {
 	ft_putstr_fd("minishell: cd: ", 2);
 	perror(path);
 	return (1);
 }
 
-int		handle_tilde(char *arg, char *home)
+int	handle_tilde(char *arg, char *home)
 {
 	char	*path;
 	int		ret;
@@ -41,7 +41,7 @@ int		handle_tilde(char *arg, char *home)
 	return (0);
 }
 
-int		handle_argv(char ac, char *home, char *arg)
+int	handle_argv(char ac, char *home, char *arg)
 {
 	int	ret;
 
@@ -66,15 +66,15 @@ int		handle_argv(char ac, char *home, char *arg)
 	return (0);
 }
 
-int		builtin_cd(int ac, char **av, char **ep)
+int	builtin_cd(int argc, char **argv, char **envp)
 {
 	char	*home;
 	char	*new_pwd;
 	int		ret;
 
-	(void)ep;
+	(void)envp;
 	home = ft_getenv("HOME");
-	ret = handle_argv(ac, home, av[1]);
+	ret = handle_argv(argc, home, argv[1]);
 	if (ret)
 		return (ret);
 	if (ft_setenv("OLDPWD", ft_getenv("PWD")))

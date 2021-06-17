@@ -38,13 +38,13 @@ char	*ft_get_current_dir_name(void)
 	return (buf);
 }
 
-int builtin_pwd(int ac, char **av, char **ep)
+int	builtin_pwd(int argc, char **argv, char **envp)
 {
 	char	*cwd;
 
-	(void)ac;
-	(void)av;
-	(void)ep;
+	(void)argc;
+	(void)argv;
+	(void)envp;
 	cwd = ft_get_current_dir_name();
 	if (!cwd)
 		return (-1);

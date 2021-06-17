@@ -16,156 +16,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-size_t  ft_skip_whitespace(char *str)
-{
-    size_t  i;  
-
-    i = 0;
-    while (str[i] && ft_isspace(str[i]))
-        i++;
-    return (i);
-}
-
-int     check_first_character(char *str)
-{
-    size_t  i;  
-
-    i = 0;
-    ft_skip_whitespace(str);
-    if (str[i] == ';' || str[i] == '|')
-		return (syntax_error(str[i]));
-    return (0);
-}
-
-int     check_last_character(char *str)
-{
-    size_t  i;
-
-    i = 0;
-    while (str[i])
-        i++;
-    i--;
-    while (i > 0 && ft_isspace(str[i]))
-        i--;
-    if (ft_strchr("<>|", str[i]))
-		return (syntax_error(str[i]));
-	return (0);
-}
-
-int     check_operator_excess(char *str)
-{
-    int i;
-
-    i = 0;
-    while (str[i])
-    {
-        if (ft_strchr("<>|;", str[i]))
-        {
-            if (str[i] == '>' && str[i + 1] == '>')
-                i++;
-            i++;
-            i += ft_skip_whitespace(str + i); 
-            if (str[i] == 0)
-                return (0);
-            else if (ft_strchr("<>|;", str[i]))
-        		return (syntax_error(str[i]));
-        }
-        i++;
-    }   
-    return (0);
-}
-
-int     check_quotes(char *str)
-{
-    int i;
-
-    i = 0;
-    while (str[i])
-    {
-        if (str[i] == '"' && (i == 0 || str[i - 1] != '\\'))
-        {
-            i++;
-            while (str[i] && str[i] != '"' && str[i - 1] != '\\')
-                i++;
-            if (str[i] != '"' )
-        		return (syntax_error(str[i]));
-        }
-        else if (str[i] == '\'' && (i == 0 || str[i - 1] != '\\'))
-        {
-            i++;
-            while (str[i] && str[i] != '\'' && str[i - 1] != '\\')
-                i++;
-            if (str[i] != '\'')
-        		return (syntax_error(str[i]));
-        }
-        i++;
-    }
-    return (0);
-}
-
-int		check_syntax(char *str)
-{
-	if (check_first_character(str) || check_last_character(str)
-	|| check_operator_excess(str))
-		return (1);
-	return (0);
-//		MINISHELL_FAILURE;
-}
-
-size_t	skip_quote_token(char *str)
-{
-	size_t	i;
-
-	i = 0;
-	if (str[i] && i != 0 && str[i - 1] != '\\')
-		return (1);
-	if (str[i] == '"')
-	{
-		i++;
-		while (str[i] && (str[i] != '"'))
-			i++;
-		if (str[i] == '"')
-			i++;
-	}
-	else if (str[i] == '\'')
-	{
-		i++;
-		while (str[i] && (str[i] != '\''))
-	 		i++;
-		if (str[i] == '\'')
-			i++;
-	}
-	return (i);
-}
-
-size_t	get_next_token(char *str)
-{
-	size_t	i;
-
-	i = 0;
-	if (str[i] == '<' || str[i] == '>')
-	{
-		i++;
-		if (str[i] == '>')
-			i++;
-	}
-	else if (str[i] == '|' || str[i] == ';')
-		i++;
-	else
-	{
-
-		while (str[i] && !ft_strchr(" |<>;", str[i]))
-		{
-			if (str[i] == '\'' || str[i] == '\"')
-				i += skip_quote_token(&str[i]);
-			else
-				i++;
-		}
-	}
-	i += ft_skip_whitespace(str + i);
-	return (i);
-}
-
 size_t	token_cnt(char *str)
 {
 	char	*sentinel;
@@ -181,9 +31,8 @@ size_t	token_cnt(char *str)
 		i += get_next_token(sentinel);
 		sentinel = str + i;
 	}
-	return (cnt);		
+	return (cnt);
 }
-
 
 char	*token_alloc(char *str)
 {
@@ -232,7 +81,6 @@ char	**tkntab_alloc(char *str, size_t cnt)
 	arr[j] = NULL;
 	return (arr);
 }
-
 
 char	**lexer(char *input_str, size_t *token_count)
 {

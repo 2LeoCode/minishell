@@ -12,7 +12,7 @@
 
 #include <minishell.h>
 
-int minishell_error(void)
+int	minishell_error(void)
 {
 	perror("minishell");
 	return (-1);

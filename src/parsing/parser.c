@@ -12,72 +12,6 @@
 
 #include <minishell.h>
 
-void	destroy_cmd_array(t_cmd **cmd_arr)
-{
-	t_cmd	**it;
-	int		i;
-
-	it = cmd_arr - 1;
-	while (*++it)
-	{
-		lst_destroy((*it)->out);
-		free((*it)->in);
-		i = -1;
-		while (++i < (*it)->argc)
-			free((*it)->argv[i]);
-		free(*it);
-	}
-	free(cmd_arr);
-}
-
-static void		*parser_failure(char **tokens, size_t token_cnt, t_cmd **cmd_arr)
-{
-	destroy_cmd_array(cmd_arr);
-	ft_destroy_array((void **)tokens, token_cnt);
-	return (NULL);
-}
-
-static size_t	cmd_count(char **tokens)
-{
-	size_t	count;
-
-	count = 1;
-	while (*tokens)
-	{
-		if (**tokens == '|' || (**tokens == ';' && tokens[1]))
-			count++;
-		tokens++;
-	}
-	return (count);
-}
-
-static int	arg_count(char **tokens)
-{
-	int	count;
-
-	count = 0;
-	while (*tokens && **tokens != '|' && **tokens != ';')
-	{
-		if (**tokens == '>' || **tokens == '<')
-			tokens++;
-		else
-			count++;
-		tokens++;
-	}
-	return (count);
-}
-
-static bool	is_valid_file(char *path)
-{
-	int	test_fd;
-
-	test_fd = open(path, O_RDONLY);
-	if (test_fd == -1)
-		return (false);
-	close(test_fd);
-	return (true);
-}
-
 static char	**parse_token(char **token, t_cmd *current_cmd, unsigned int *index)
 {
 	if (**token == '>')
@@ -127,92 +61,39 @@ static char	**parse_command(char **tokens, t_cmd *current_cmd)
 	return (tokens);
 }
 
-int		replace_env_tokens(char **tokens)
+static int	cmd_init(t_cmd **cmd_ptr, int ac)
 {
-	char	*env;
-	char	*ptr;
-	char	*to_replace;
-	bool	failure;
-
-	failure = false;
-	while (*tokens)
-	{
-		if (**tokens != '\'')
-		{
-			ptr = ft_strchr(*tokens, '$');
-			while (ptr)
-			{
-				if (!ft_memcmp(ptr, "$?", 2))
-				{
-					env = ft_itoa(g_global_data.status);
-					if (!env || ft_strreplace_first(tokens, "$?", env, free))
-					{
-						free(env);
-						return (-1);
-					}
-					free(env);
-					ptr = ft_strchr(ptr + 1, '$');
-					continue ;
-				}
-				to_replace = ft_strndup(ptr, ft_wrdlen(ptr));
-				ft_rplchr(to_replace, '\"', 0);
-				if (!to_replace)
-					return (-1);
-				env = ft_getenv(to_replace + 1);
-				if (!env)
-					env = "";
-				if (ft_strreplace_first(tokens, to_replace, env, free))
-					failure = true;
-				free(to_replace);
-				if (failure)
-					return (-1);
-				ptr = ft_strchr(ptr + 1, '$');
-			}
-		}
-		tokens++;
-	}
-	return (0);
-}
-
-int	remove_quotes(char **s_ptr)
-{
-	char	*new_s;
-
-	new_s = ft_strntrim(*s_ptr, "\"\'", 1);
-	if (!new_s)
+	*cmd_ptr = malloc(sizeof(t_cmd) + (ac + 1) * sizeof(char *));
+	(*cmd_ptr)->redirect_out = false;
+	(*cmd_ptr)->redirect_out2 = false;
+	(*cmd_ptr)->pipe = false;
+	(*cmd_ptr)->argv[ac] = NULL;
+	(*cmd_ptr)->in = NULL;
+	(*cmd_ptr)->argc = ac;
+	if (!*cmd_ptr || lst_init(&(*cmd_ptr)->out))
 		return (-1);
-	free(*s_ptr);
-	*s_ptr = new_s;
 	return (0);
 }
 
-t_cmd	**cmd_arr_without_quotes(t_cmd **cmd_arr)
+static int	create_new_cmd(char ***token_ptr, t_cmd **cmd_ptr)
 {
-	int	i;
-	int	j;
+	int		ac;
+	char	**tmp;
 
-	i = -1;
-	while (cmd_arr[++i])
-	{
-		j = -1;
-		while (++j < cmd_arr[i]->argc)
-			if ((*cmd_arr[i]->argv[j] == '\'' || *cmd_arr[i]->argv[j] == '\"')
-			&& remove_quotes(&cmd_arr[i]->argv[j]))
-			{
-				destroy_cmd_array(cmd_arr);
-				return (NULL);
-			}
-	}
-	return (cmd_arr);
+	ac = arg_count(*token_ptr);
+	if (cmd_init(cmd_ptr, ac))
+		return (-1);
+	tmp = parse_command(*token_ptr, *cmd_ptr);
+	if (!tmp)
+		return (-1);
+	*token_ptr = tmp;
 }
 
 t_cmd	**parser(char **tokens, size_t token_cnt)
 {
 	const size_t	count = cmd_count(tokens);
 	char			**begin_tokens;
-	int				ac;
 	t_cmd			**cmd_arr;
-	char			**tmp;
 	size_t			i;
 
 	begin_tokens = tokens;
@@ -220,23 +101,9 @@ t_cmd	**parser(char **tokens, size_t token_cnt)
 	if (!cmd_arr || replace_env_tokens(tokens))
 		return (NULL);
 	cmd_arr[count] = NULL;
-	i = ((size_t)-1);
+	i = -1;
 	while (++i < count)
-	{
-		ac = arg_count(tokens);
-		cmd_arr[i] = malloc(sizeof(t_cmd) + (ac + 1) * sizeof(char *));
-		cmd_arr[i]->redirect_out = false;
-		cmd_arr[i]->redirect_out2 = false;
-		cmd_arr[i]->pipe = false;
-		cmd_arr[i]->argv[ac] = NULL;
-		if (!cmd_arr[i] || lst_init(&cmd_arr[i]->out))
+		if (create_new_cmd(&tokens, &cmd_arr[i]))
 			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
-		cmd_arr[i]->in = NULL;
-		cmd_arr[i]->argc = ac;
-		tmp = parse_command(tokens, cmd_arr[i]);
-		if (!tmp)
-			return (parser_failure(begin_tokens, token_cnt, cmd_arr));
-		tokens = tmp;
-	}
 	return (cmd_arr_without_quotes(cmd_arr));
 }

@@ -34,10 +34,10 @@ void	ft_printexp(char **ep)
 	}
 }
 
-int		is_valid_arg(char *str)
+int	is_valid_arg(char *str)
 {
 	int	len;
-	int i;
+	int	i;
 
 	len = ft_strlen(str);
 	i = 0;
@@ -70,30 +70,30 @@ int	update_path(const char *new_path, bool update_env)
 	return (0);
 }
 
-int		builtin_export(int ac, char ** av, char ** ep)
+int	builtin_export(int argc, char **argv, char **envp)
 {
 	char	*rpl;
 	int		ret;
 
-	while (*av)
+	while (*argv)
 	{
-		if (!is_valid_arg(*av))
+		if (!is_valid_arg(*argv))
 			return (1);
-		rpl = ft_rplchr(*av, '=', '\0');
-		if (!ft_strcmp(*av, "PATH"))
+		rpl = ft_rplchr(*argv, '=', '\0');
+		if (!ft_strcmp(*argv, "PATH"))
 		{
 			rpl += !!rpl;
 			ret = update_path(rpl, true);
 		}
-		else if (!rpl && !ft_getenv(*av))
-			ret = ft_setenv(*av, NULL);
+		else if (!rpl && !ft_getenv(*argv))
+			ret = ft_setenv(*argv, NULL);
 		else
-			ret = ft_setenv(*av, rpl + 1);
+			ret = ft_setenv(*argv, rpl + 1);
 		if (ret == -1)
 			return (-1);
-		av++;
+		argv++;
 	}
-	if (ac == 1)
-		ft_printexp(ep);
+	if (argc == 1)
+		ft_printexp(envp);
 	return (0);
 }
