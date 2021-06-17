@@ -31,8 +31,9 @@ static int	process_key(t_shell *ms, t_input *input, int key)
 	else if (key == _KEY_RIGHT)
 		return (process_key_right(&ms->tcaps, input));
 	else if ((key == _KEY_UP) || (key == _KEY_DOWN))
-		return (-1 * (process_key_hist(g_global_data.history, input,
-					key) == -1));
+		if (process_key_hist(g_global_data.history, input,
+					key) == -1)
+			return (-1);
 	return (update_input(&ms->tcaps, input));
 }
 

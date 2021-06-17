@@ -88,10 +88,8 @@ int	setup_env(char **envp, int cnt)
 
 int	minishell_setup(t_shell *ms, char **envp)
 {
-	int	i;
 	int	count;
 
-	i = -1;
 	count = 0;
 	g_global_data.history = lst_new();
 	if (!g_global_data.history)
