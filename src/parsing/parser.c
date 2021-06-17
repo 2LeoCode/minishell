@@ -28,10 +28,11 @@ static char	**parse_token(char **token, t_cmd *current_cmd, unsigned int *index)
 	else if (**token == '<')
 	{
 		free(*token);
+		*token = NULL;
 		current_cmd->in = *++token;
 		*token = NULL;
 		if (!is_valid_file(current_cmd->in))
-			return (NULL);
+			return (invalid_file(current_cmd->in));
 	}
 	else
 	{

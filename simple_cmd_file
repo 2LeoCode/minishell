@@ -1,6 +1,5 @@
 echo
 cd
-exit
 env
 export
 unset
@@ -14,3 +13,4 @@ ls
 file1
 file2
 file3
+exit

@@ -33,3 +33,10 @@ t_cmd	**cmd_arr_without_quotes(t_cmd **cmd_arr)
 	}
 	return (cmd_arr);
 }
+
+void	*invalid_file(const char *path)
+{
+	ft_putstr_fd("minishell: ", 2);
+	perror(path);
+	return (NULL);
+}

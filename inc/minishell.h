@@ -282,4 +282,6 @@ void	handle_sigint(t_input *input);
 
 void	do_pipe_child(t_shell *ms, t_cmd *current_cmd, t_executor exec);
 int		get_input(t_shell *ms, char **final_input);
+
+void	*invalid_file(const char *path);
 #endif

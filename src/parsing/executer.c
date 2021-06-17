@@ -79,12 +79,12 @@ static pid_t	execute_cmd_pipe(t_shell *ms, t_cmd *current_cmd, t_fdio fdio,
 	return (cpid);
 }
 
-static void	wait_if_child_running(pid_t cpid)
+static void	wait_if_child_running(pid_t *cpid)
 {
-	if (cpid)
+	if (*cpid)
 	{
-		waitpid(cpid, &g_global_data.status, 0);
-		cpid = 0;
+		waitpid(*cpid, &g_global_data.status, 0);
+		*cpid = 0;
 		g_global_data.current_cpid = 0;
 	}
 }
@@ -96,23 +96,23 @@ int	executer(t_shell *ms, t_cmd **cmd_arr)
 	const int	stdfd[2] = {dup(0), dup(1)};
 
 	cpid = 0;
-	while (*cmd_arr)
+	cmd_arr--;
+	while (*++cmd_arr)
 	{
 		init_fdio(&fdio, *cmd_arr);
 		if (create_useless_files((*cmd_arr)->out, stdfd)
 			|| open_useful_files(*cmd_arr, &fdio, stdfd))
 			return (-1);
-		wait_if_child_running(cpid);
+		wait_if_child_running(&cpid);
+		if (!(*cmd_arr)->argc)
+			continue ;
 		if (!(*cmd_arr)->pipe)
 			cpid = execute_cmd(ms, *cmd_arr, fdio, stdfd);
 		else
 			cpid = execute_cmd_pipe(ms, *cmd_arr, fdio, stdfd);
 		if (check_error(&cpid, *(*cmd_arr)->argv))
 			return (-1);
-		cmd_arr++;
 	}
-	if (cpid)
-		waitpid(cpid, &g_global_data.status, 0);
-	g_global_data.current_cpid = 0;
+	wait_if_child_running(&cpid);
 	return (0);
 }
