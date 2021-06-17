@@ -1,0 +1,16 @@
+echo
+cd
+exit
+env
+export
+unset
+pwd
+ls
+<
+>
+>>
+|
+;
+file1
+file2
+file3
