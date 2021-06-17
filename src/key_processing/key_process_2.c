@@ -28,6 +28,7 @@ int	process_hist(int key, t_input *input)
 		return (-1);
 	input->prev_index = input->index;
 	input->index = ft_strlen(input->in);
+	return (0);
 }
 
 void	handle_sigint(t_input *input)

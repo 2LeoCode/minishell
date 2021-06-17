@@ -66,7 +66,7 @@ int	setup_env(char **envp, int cnt)
 		return (-1);
 	g_global_data.env->data[cnt] = NULL;
 	g_global_data.env->count = cnt;
-	i = 0;
+	i = -1;
 	while (++i < g_global_data.env->count)
 	{
 		g_global_data.env->data[i] = ft_strdup(envp[i]);

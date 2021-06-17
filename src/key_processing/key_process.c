@@ -13,8 +13,8 @@ static int	process_key(t_shell *ms, t_input *input, int key)
 {
 	if (g_global_data.sigint)
 		handle_sigint(input);
-	if (key == _KEY_TAB)
-		return (0);
+	if (key == _KEY_TAB || key == _KEY_EOF)
+		return (2 * (key == _KEY_EOF));
 	if (key == _KEY_ENTER)
 		return (1);
 	if (key == -1 || (ft_isprint(key) && process_key_print(input, key)))

@@ -87,6 +87,7 @@ static int	create_new_cmd(char ***token_ptr, t_cmd **cmd_ptr)
 	if (!tmp)
 		return (-1);
 	*token_ptr = tmp;
+	return (0);
 }
 
 t_cmd	**parser(char **tokens, size_t token_cnt)

@@ -48,6 +48,7 @@
 # define _KEY_ENTER 10
 # define _KEY_DELETE 127
 # define _KEY_TAB 9
+# define _KEY_EOF 4
 
 void	kek(void);
 /*
@@ -276,4 +277,9 @@ int		check_syntax(char *str);
 size_t	get_next_token(char *str);
 size_t	skip_quote_token(char *str);
 size_t	ft_skip_whitespace(char *str);
+
+void	handle_sigint(t_input *input);
+
+void	do_pipe_child(t_shell *ms, t_cmd *current_cmd, t_executor exec);
+int		get_input(t_shell *ms, char **final_input);
 #endif

@@ -15,8 +15,8 @@
 int	push_history(const char *input)
 {
 	if ((!lst_size(g_global_data.history)
-			|| ft_strcmp(input, (char*)g_global_data.history->next->data))
-		&& lst_push_front(g_global_data.history, input, ft_strlen(input) + 1))
+			|| ft_strcmp(input, (char *)g_global_data.history->next->data))
+		&& lst_push_front(g_global_data.history, (void *)input, ft_strlen(input) + 1))
 		return (-1);
 	return (0);
 }

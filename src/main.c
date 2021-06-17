@@ -97,10 +97,12 @@ static void	prompt(t_shell *ms, char **input_ptr)
 	int	cmd_ret;
 
 	read_ret = 1;
-	while (1)
+	while (42)
 	{
 		write(1, "minishell-1.0$ ", 15);
 		read_ret = get_input(ms, input_ptr);
+		if (read_ret == 2)
+			break ;
 		if (read_ret != -1)
 			cmd_ret = process_input(ms, *input_ptr);
 		if (read_ret == -1 || cmd_ret == -1)
@@ -109,6 +111,11 @@ static void	prompt(t_shell *ms, char **input_ptr)
 			minishell_exit(-1);
 		}
 	}
+	free(*input_ptr);
+	ft_putendl("exit");
+	save_history();
+	tcsetattr(0, 0, &g_global_data.term_backup);
+	minishell_clear();
 }
 
 int	main(int argc, char **argv, char **envp)

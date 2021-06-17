@@ -12,29 +12,39 @@ OBJDIR =	.obj
 
 
 SRC =		$(addsuffix $(word 1, $(.SUFFIXES)),\
-			$(addprefix key_processing/key_process_,\
-			0\
-			1)\
-			main\
-			$(addprefix minishell_,\
-			history\
-			error\
-			exit\
-			env\
-			clear\
-			setup)\
+			$(addprefix builtins/,\
+			builtin_cd\
+			builtin_echo\
+			builtin_env\
+			builtin_exit\
+			builtin_export\
+			builtin_pwd\
+			builtin_unset)\
+			$(addprefix key_processing/,\
+			key_process_1\
+			key_process_2\
+			key_process)\
 			$(addprefix parsing/,\
+			executer_init\
+			executer_utils_1\
+			executer_utils\
+			executer\
+			lexer_utils\
 			lexer\
+			parser_utils_1\
+			parser_utils\
+			parser_variable\
 			parser\
-			executer)\
-			$(addprefix builtins/builtin_,\
-			cd\
-			echo\
-			env\
-			exit\
-			export\
-			pwd\
-			unset)\
+			syntax_checker)\
+			$(addprefix setup/,\
+			minishell_setup\
+			term_setup)\
+			main\
+			minishell_clear\
+			minishell_env\
+			minishell_error\
+			minishell_exit\
+			minishell_history\
 			signal_handling)
 INC =		$(addsuffix $(word 3, $(.SUFFIXES)),\
 			libft\
@@ -48,7 +58,7 @@ LIB	 =		ft\
 OBJ =		$(SRC:$(word 1, $(.SUFFIXES))=$(word 2, $(.SUFFIXES)))
 
 CC =		gcc
-CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror #-fsanitize=address -g3
+CFLAGS =	-I $(INCDIR) -Wall -Wextra -Werror -fsanitize=address -g3
 LCFLAGS =	$(addprefix -L, $(LIBDIR)) lib/libft.a lib/liblist.a lib/libgnl.a $(addprefix -l, $(LIB))
 
 ifeq ($(OS), Darwin)
@@ -78,7 +88,7 @@ $(OBJDIR):
 	@printf "$(KYEL)➤ "
 	mkdir $@
 	@printf "➤ "
-	mkdir $@/builtins $@/key_processing $@/parsing
+	mkdir $@/builtins $@/key_processing $@/parsing $@/setup
 	@printf "$(KNRM)"
 
 $(NAME): $(addprefix $(OBJDIR)/, $(OBJ))

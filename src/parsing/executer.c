@@ -1,6 +1,6 @@
 #include <minishell.h>
 
-static void	do_pipe_child(t_shell *ms, t_cmd *current_cmd, t_executor exec)
+void	do_pipe_child(t_shell *ms, t_cmd *current_cmd, t_executor exec)
 {
 	t_builtin_fun	builtin_fun;
 
