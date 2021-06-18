@@ -74,11 +74,11 @@ int	key_hist_block(void)
 int	update_input(const t_term *tcaps, t_input *input)
 {
 	if (input->prev_index)
-		tputs(tparm(tcaps->ile, input->prev_index), 1, ft_putchar);
+		ft_ntputs(tcaps->le, input->prev_index);
 	tputs(tcaps->ks, 1, ft_putchar);
 	ft_putstr(input->in);
 	input->prev_len = ft_strlen(input->in);
 	if (input->prev_len != input->index)
-		tputs(tparm(tcaps->ile, input->prev_len - input->index), 1, ft_putchar);
+		ft_ntputs(tcaps->le, input->prev_len - input->index);
 	return (0);
 }

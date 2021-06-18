@@ -1,4 +1,10 @@
 #include <minishell.h>
+
+void		ft_ntputs(const char *termcap, size_t n)
+{
+	while (n--)
+		tputs(termcap, 1, ft_putchar);
+}
 /*
 **	In that function we have our data structures and the last key that has been
 **	pressed. So we will check for every "action" keys (ENTER, arrow keys, and
@@ -32,7 +38,7 @@ static int	process_key(t_shell *ms, t_input *input, int key)
 		ret = process_key_hist(g_global_data.history, input,key);
 	if (ret == -1)
 		return (-1);
-	else if (ret == 1)
+	else if (ret == 1 || !ft_isascii(key))
 		return (0);
 	return (update_input(&ms->tcaps, input));
 }

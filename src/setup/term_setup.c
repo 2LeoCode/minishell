@@ -74,6 +74,5 @@ int	setup_termcaps(t_term *tc)
 	tc->le = tgetstr("le", NULL);
 	tc->ri = tgetstr("nd", NULL);
 	tc->ks = "\033[0K";
-	tc->ile = tgetstr("LE", NULL);
 	return (0);
 }
